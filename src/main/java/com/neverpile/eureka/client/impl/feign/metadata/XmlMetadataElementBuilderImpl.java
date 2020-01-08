@@ -12,7 +12,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.springframework.http.MediaType;
 import org.w3c.dom.Element;
 
 import com.neverpile.eureka.client.core.Metadata;
@@ -28,7 +27,7 @@ public class XmlMetadataElementBuilderImpl<P>
   public XmlMetadataElementBuilderImpl(final P parent, final String schema, final Metadata metadata) {
     super(parent, schema, metadata);
     
-    element.setContentType(MediaType.APPLICATION_XML_VALUE);
+    element.setContentType("application/xml");
   }
 
   @Override

@@ -1,7 +1,5 @@
 package com.neverpile.eureka.client.impl.feign.metadata;
 
-import org.springframework.http.MediaType;
-
 import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.impl.feign.AbstractMetadataElementBuilderImpl;
 import com.neverpile.eureka.client.metadata.GenericMetadataElementBuilder;
@@ -19,12 +17,6 @@ public class GenericMetadataElementBuilderImpl<P>
   @Override
   public GenericMetadataElementBuilder<P> mediaType(final String mediaType) {
     element.setContentType(mediaType);
-    return this;
-  }
-
-  @Override
-  public GenericMetadataElementBuilder<P> mediaType(final MediaType mediaType) {
-    element.setContentType(mediaType.toString());
     return this;
   }
 

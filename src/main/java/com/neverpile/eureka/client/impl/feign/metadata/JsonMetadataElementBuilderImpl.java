@@ -1,7 +1,5 @@
 package com.neverpile.eureka.client.impl.feign.metadata;
 
-import org.springframework.http.MediaType;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -18,7 +16,7 @@ public class JsonMetadataElementBuilderImpl<P>
   public JsonMetadataElementBuilderImpl(final P parent, final String schema, final Metadata metadata) {
     super(parent, schema, metadata);
     
-    element.setContentType(MediaType.APPLICATION_JSON_VALUE);
+    element.setContentType("application/json");
   }
 
   @Override

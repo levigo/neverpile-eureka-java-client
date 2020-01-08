@@ -12,7 +12,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <feign-mock.version>10.7.0</feign-mock.version>
+    <feig-version>10.7.0</feig-version>
+
     <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
     <opentracing-spring-jaeger-web-starter.version>2.0.3</opentracing-spring-jaeger-web-starter.version>
   </properties>
@@ -21,22 +22,28 @@
     <dependency>
       <groupId>io.github.openfeign</groupId>
       <artifactId>feign-jackson</artifactId>
+      <version>10.7.0</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-security</artifactId>
+      <groupId>io.github.openfeign.form</groupId>
+      <artifactId>feign-form</artifactId>
+      <version>3.8.0</version>
     </dependency>
+    <!-- <dependency> -->
+    <!-- <groupId>org.springframework.cloud</groupId> -->
+    <!-- <artifactId>spring-cloud-security</artifactId> -->
+    <!-- </dependency> -->
   </dependencies>
 
   <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
+    <!-- <dependencies> -->
+    <!-- <dependency> -->
+    <!-- <groupId>org.springframework.cloud</groupId> -->
+    <!-- <artifactId>spring-cloud-dependencies</artifactId> -->
+    <!-- <version>${spring-cloud.version}</version> -->
+    <!-- <type>pom</type> -->
+    <!-- <scope>import</scope> -->
+    <!-- </dependency> -->
+    <!-- </dependencies> -->
   </dependencyManagement>
 </project>

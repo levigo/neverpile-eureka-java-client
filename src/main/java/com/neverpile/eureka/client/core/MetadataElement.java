@@ -3,12 +3,10 @@ package com.neverpile.eureka.client.core;
 import java.util.Arrays;
 import java.util.Date;
 
-import org.springframework.http.MediaType;
-
 public class MetadataElement {
   private String schema;
 
-  private String contentType = MediaType.APPLICATION_JSON_VALUE;
+  private String contentType = "application/json";
 
   private byte[] content;
 

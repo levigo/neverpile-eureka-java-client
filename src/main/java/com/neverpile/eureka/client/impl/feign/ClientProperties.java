@@ -1,10 +1,5 @@
 package com.neverpile.eureka.client.impl.feign;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
-@Component
-@ConfigurationProperties("client-context-oauth2")
 public class ClientProperties {
 
     private String username = "admin";
@@ -18,7 +13,7 @@ public class ClientProperties {
         return username;
     }
 
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
@@ -26,7 +21,7 @@ public class ClientProperties {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -34,7 +29,7 @@ public class ClientProperties {
         return accountServiceUrl;
     }
 
-    public void setAccountServiceUrl(String accountServiceUrl) {
+    public void setAccountServiceUrl(final String accountServiceUrl) {
         this.accountServiceUrl = accountServiceUrl;
     }
 
@@ -42,7 +37,7 @@ public class ClientProperties {
         return clientId;
     }
 
-    public void setClientId(String clientId) {
+    public void setClientId(final String clientId) {
         this.clientId = clientId;
     }
 
@@ -50,7 +45,7 @@ public class ClientProperties {
         return clientSecret;
     }
 
-    public void setClientSecret(String clientSecret) {
+    public void setClientSecret(final String clientSecret) {
         this.clientSecret = clientSecret;
     }
 
@@ -58,7 +53,7 @@ public class ClientProperties {
         return scope;
     }
 
-    public void setScope(String[] scope) {
+    public void setScope(final String[] scope) {
         this.scope = scope;
     }
 }

@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.neverpile.eureka.client.content.ContentElementBuilder;
 import com.neverpile.eureka.client.core.DocumentBuilder;
 
@@ -22,7 +19,7 @@ public class ContentElementBuilderImpl implements ContentElementBuilder<Document
 
   private String role;
 
-  private MediaType mediaType;
+  private String mediaType;
 
   private Supplier<InputStream> streamSupplier;
 
@@ -51,12 +48,6 @@ public class ContentElementBuilderImpl implements ContentElementBuilder<Document
 
   @Override
   public ContentElementBuilder<DocumentBuilder> mediaType(final String mediaType) {
-    this.mediaType = MediaType.parseMediaType(mediaType);
-    return this;
-  }
-
-  @Override
-  public ContentElementBuilder<DocumentBuilder> mediaType(final MediaType mediaType) {
     this.mediaType = mediaType;
     return this;
   }
@@ -151,12 +142,7 @@ public class ContentElementBuilderImpl implements ContentElementBuilder<Document
 
       @Override
       public String getContentType() {
-        return mediaType.toString();
-      }
-
-      @Override
-      public byte[] getBytes() throws IOException {
-        throw new UnsupportedOperationException();
+        return mediaType;
       }
     });
     return documentBuilderImpl;

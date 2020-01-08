@@ -3,11 +3,9 @@ package com.neverpile.eureka.client.core;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.springframework.http.MediaType;
-
 public interface DocumentService {
   public interface ContentElementResponse {
-    MediaType getMediaType();
+    String getMediaType();
     
     InputStream getContent() throws IOException;
     

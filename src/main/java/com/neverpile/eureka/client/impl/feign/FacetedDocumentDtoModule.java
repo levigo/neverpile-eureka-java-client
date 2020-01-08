@@ -3,9 +3,6 @@ package com.neverpile.eureka.client.impl.feign;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -20,11 +17,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.neverpile.eureka.client.core.DocumentDto;
 import com.neverpile.eureka.client.core.DocumentFacet;
 
-@Component
 public class FacetedDocumentDtoModule extends SimpleModule {
   private static final long serialVersionUID = 1L;
 
-  @Autowired(required = false)
   private final List<? extends DocumentFacet> facets;
 
   public FacetedDocumentDtoModule(final List<? extends DocumentFacet> facets) {

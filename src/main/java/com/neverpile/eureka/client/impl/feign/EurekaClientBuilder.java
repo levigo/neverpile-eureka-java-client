@@ -11,7 +11,9 @@ import com.neverpile.eureka.client.metadata.MetadataFacet;
 
 import feign.Feign;
 import feign.RequestInterceptor;
+import feign.form.FormEncoder;
 import feign.jackson.JacksonDecoder;
+import feign.jackson.JacksonEncoder;
 
 public class EurekaClientBuilder {
   private String baseURL;
@@ -29,8 +31,8 @@ public class EurekaClientBuilder {
     return new JacksonDecoder(jacksonModules());
   }
 
-  private FeignFormEncoder createEncoder() {
-    return new FeignFormEncoder(jacksonModules());
+  private FormEncoder createEncoder() {
+    return new FormEncoder(new JacksonEncoder(jacksonModules()));
   }
 
   private List<Module> jacksonModules() {
