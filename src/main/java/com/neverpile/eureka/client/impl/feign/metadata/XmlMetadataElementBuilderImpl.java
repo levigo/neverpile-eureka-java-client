@@ -15,9 +15,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.springframework.http.MediaType;
 import org.w3c.dom.Element;
 
+import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.impl.feign.AbstractMetadataElementBuilderImpl;
 import com.neverpile.eureka.client.metadata.XmlMetadataElementBuilder;
-import com.neverpile.eureka.client.model.Metadata;
 
 public class XmlMetadataElementBuilderImpl<P>
     extends

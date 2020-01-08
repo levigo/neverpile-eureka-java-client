@@ -1,12 +1,9 @@
-package com.neverpile.eureka.client;
+package com.neverpile.eureka.client.core;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.springframework.http.MediaType;
-
-import com.neverpile.eureka.client.model.Digest;
-import com.neverpile.eureka.client.model.DocumentDto;
 
 public interface DocumentService {
   public interface ContentElementResponse {

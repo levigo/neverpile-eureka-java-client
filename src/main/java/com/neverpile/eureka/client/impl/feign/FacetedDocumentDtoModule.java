@@ -17,8 +17,8 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBase;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.neverpile.eureka.client.model.DocumentDto;
-import com.neverpile.eureka.client.model.DocumentFacet;
+import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.DocumentFacet;
 
 @Component
 public class FacetedDocumentDtoModule extends SimpleModule {

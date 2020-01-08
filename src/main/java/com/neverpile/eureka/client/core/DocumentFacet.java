@@ -1,4 +1,4 @@
-package com.neverpile.eureka.client.model;
+package com.neverpile.eureka.client.core;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;

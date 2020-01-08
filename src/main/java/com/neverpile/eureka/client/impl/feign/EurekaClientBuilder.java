@@ -4,21 +4,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.Module;
-import com.neverpile.eureka.client.NeverpileClient;
 import com.neverpile.eureka.client.content.ContentElementFacet;
+import com.neverpile.eureka.client.core.DocumentFacet;
+import com.neverpile.eureka.client.core.NeverpileClient;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
-import com.neverpile.eureka.client.model.DocumentFacet;
 
 import feign.Feign;
 import feign.RequestInterceptor;
 import feign.jackson.JacksonDecoder;
 
-public class ClientBuilder {
+public class EurekaClientBuilder {
   private String baseURL;
   
   private final Feign.Builder builder;
   
-  ClientBuilder() {
+  public EurekaClientBuilder() {
     builder = Feign.builder()
         .errorDecoder(new FeignErrorDecoder())
         .decoder(createDecoder())
@@ -40,7 +40,7 @@ public class ClientBuilder {
     return modules;
   }
 
-  public ClientBuilder baseURL(final String baseURL) {
+  public EurekaClientBuilder baseURL(final String baseURL) {
     this.baseURL = baseURL;
     return this;
   }
@@ -49,7 +49,7 @@ public class ClientBuilder {
     return new OAuth2ClientBuilder(this);
   }
 
-  public ClientBuilder requestInterceptor(final RequestInterceptor i) {
+  public EurekaClientBuilder requestInterceptor(final RequestInterceptor i) {
     builder.requestInterceptor(i);
     return this;
   }

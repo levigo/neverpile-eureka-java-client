@@ -1,6 +1,6 @@
 package com.neverpile.eureka.client.impl.feign;
 
-import com.neverpile.eureka.client.ApiException;
+import com.neverpile.eureka.client.core.ApiException;
 
 public class FeignClientException extends ApiException {
 

@@ -1,4 +1,4 @@
-package com.neverpile.eureka.client.model;
+package com.neverpile.eureka.client.core;
 
 import javax.xml.bind.annotation.XmlEnumValue;
 

@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.neverpile.eureka.client.ContentElementBuilder;
-import com.neverpile.eureka.client.DocumentBuilder;
-import com.neverpile.eureka.client.DocumentFacetBuilder;
-import com.neverpile.eureka.client.model.DocumentDto;
+import com.neverpile.eureka.client.content.ContentElementBuilder;
+import com.neverpile.eureka.client.core.DocumentBuilder;
+import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.DocumentFacetBuilder;
 
 public class DocumentBuilderImpl implements DocumentBuilder {
 

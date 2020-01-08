@@ -3,8 +3,8 @@ package com.neverpile.eureka.client.impl.feign;
 
 import java.io.UnsupportedEncodingException;
 
-import com.neverpile.eureka.client.model.Metadata;
-import com.neverpile.eureka.client.model.MetadataElement;
+import com.neverpile.eureka.client.core.Metadata;
+import com.neverpile.eureka.client.core.MetadataElement;
 
 public class AbstractMetadataElementBuilderImpl<P, I> {
 

@@ -11,8 +11,8 @@ import java.util.function.Supplier;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.neverpile.eureka.client.ContentElementBuilder;
-import com.neverpile.eureka.client.DocumentBuilder;
+import com.neverpile.eureka.client.content.ContentElementBuilder;
+import com.neverpile.eureka.client.core.DocumentBuilder;
 
 public class ContentElementBuilderImpl implements ContentElementBuilder<DocumentBuilder> {
 

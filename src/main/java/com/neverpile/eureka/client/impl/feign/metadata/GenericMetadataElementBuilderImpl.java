@@ -2,9 +2,9 @@ package com.neverpile.eureka.client.impl.feign.metadata;
 
 import org.springframework.http.MediaType;
 
+import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.impl.feign.AbstractMetadataElementBuilderImpl;
 import com.neverpile.eureka.client.metadata.GenericMetadataElementBuilder;
-import com.neverpile.eureka.client.model.Metadata;
 
 public class GenericMetadataElementBuilderImpl<P>
     extends

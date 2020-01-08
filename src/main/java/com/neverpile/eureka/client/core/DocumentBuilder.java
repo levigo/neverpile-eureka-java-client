@@ -1,6 +1,6 @@
-package com.neverpile.eureka.client;
+package com.neverpile.eureka.client.core;
 
-import com.neverpile.eureka.client.model.DocumentDto;
+import com.neverpile.eureka.client.content.ContentElementBuilder;
 
 public interface DocumentBuilder {
   DocumentBuilder id(String id);

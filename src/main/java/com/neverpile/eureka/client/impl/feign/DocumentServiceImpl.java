@@ -8,11 +8,11 @@ import java.util.Optional;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.codec.Hex;
 
-import com.neverpile.eureka.client.DocumentBuilder;
-import com.neverpile.eureka.client.DocumentService;
-import com.neverpile.eureka.client.model.Digest;
-import com.neverpile.eureka.client.model.DocumentDto;
-import com.neverpile.eureka.client.model.HashAlgorithm;
+import com.neverpile.eureka.client.core.Digest;
+import com.neverpile.eureka.client.core.DocumentBuilder;
+import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.DocumentService;
+import com.neverpile.eureka.client.core.HashAlgorithm;
 
 import feign.Feign;
 import feign.Response;

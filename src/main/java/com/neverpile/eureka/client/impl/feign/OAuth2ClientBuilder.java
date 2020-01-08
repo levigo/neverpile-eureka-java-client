@@ -7,7 +7,7 @@ import feign.RequestInterceptor;
 
 @SuppressWarnings("unused")
 public class OAuth2ClientBuilder {
-  private final ClientBuilder parent;
+  private final EurekaClientBuilder parent;
   private String username;
   private String password;
   private String clientId;
@@ -15,7 +15,7 @@ public class OAuth2ClientBuilder {
   private final List<String> scopes = new ArrayList<>();
   private String accessTokenUri;
 
-  OAuth2ClientBuilder(final ClientBuilder clientBuilder) {
+  OAuth2ClientBuilder(final EurekaClientBuilder clientBuilder) {
     this.parent = clientBuilder;
   }
 
@@ -54,7 +54,7 @@ public class OAuth2ClientBuilder {
     return null;
   }
 
-  public ClientBuilder done() {
+  public EurekaClientBuilder done() {
     parent.requestInterceptor(oauth2FeignRequestInterceptor());
     return parent;
   }

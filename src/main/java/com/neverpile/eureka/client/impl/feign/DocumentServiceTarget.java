@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.neverpile.eureka.client.model.DocumentDto;
+import com.neverpile.eureka.client.core.DocumentDto;
 
 import feign.Headers;
 import feign.Param;

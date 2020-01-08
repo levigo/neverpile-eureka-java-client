@@ -1,15 +1,15 @@
 package com.neverpile.eureka.client.impl.feign;
 
-import com.neverpile.eureka.client.DocumentService;
-import com.neverpile.eureka.client.NeverpileClient;
+import com.neverpile.eureka.client.core.DocumentService;
+import com.neverpile.eureka.client.core.NeverpileClient;
 
 import feign.Feign;
 import feign.Feign.Builder;
 
 
 public class FeignNeverpileClient implements NeverpileClient {
-  public static ClientBuilder builder() {
-    return new ClientBuilder();
+  public static EurekaClientBuilder builder() {
+    return new EurekaClientBuilder();
   }
 
   private final Builder builder;
