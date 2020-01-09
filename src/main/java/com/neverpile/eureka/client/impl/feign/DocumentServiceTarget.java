@@ -3,6 +3,7 @@ package com.neverpile.eureka.client.impl.feign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.neverpile.eureka.client.content.MultipartFile;
 import com.neverpile.eureka.client.core.Document;
 
 import feign.Headers;

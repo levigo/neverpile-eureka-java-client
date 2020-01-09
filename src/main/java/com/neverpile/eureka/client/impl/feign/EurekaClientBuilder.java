@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.neverpile.eureka.client.content.ContentElementFacet;
+import com.neverpile.eureka.client.content.MultipartFile;
 import com.neverpile.eureka.client.core.CreationDateFacet;
 import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.ModificationDateFacet;

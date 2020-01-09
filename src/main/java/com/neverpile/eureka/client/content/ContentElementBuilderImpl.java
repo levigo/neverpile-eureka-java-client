@@ -1,4 +1,4 @@
-package com.neverpile.eureka.client.impl.feign;
+package com.neverpile.eureka.client.content;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-import com.neverpile.eureka.client.content.ContentElementBuilder;
 import com.neverpile.eureka.client.core.DocumentBuilder;
+import com.neverpile.eureka.client.impl.feign.DocumentBuilderImpl;
 
 public class ContentElementBuilderImpl implements ContentElementBuilder<DocumentBuilder> {
 

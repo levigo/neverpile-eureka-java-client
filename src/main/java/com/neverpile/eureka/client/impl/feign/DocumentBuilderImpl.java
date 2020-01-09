@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.neverpile.eureka.client.content.ContentElementBuilder;
+import com.neverpile.eureka.client.content.ContentElementBuilderImpl;
+import com.neverpile.eureka.client.content.MultipartFile;
 import com.neverpile.eureka.client.core.DocumentBuilder;
 import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.DocumentFacetBuilder;
