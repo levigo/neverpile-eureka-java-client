@@ -12,8 +12,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <feig-version>10.7.0</feig-version>
-
     <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
     <opentracing-spring-jaeger-web-starter.version>2.0.3</opentracing-spring-jaeger-web-starter.version>
   </properties>
@@ -29,10 +27,44 @@
       <artifactId>feign-form</artifactId>
       <version>3.8.0</version>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+    
     <!-- <dependency> -->
     <!-- <groupId>org.springframework.cloud</groupId> -->
     <!-- <artifactId>spring-cloud-security</artifactId> -->
     <!-- </dependency> -->
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.13.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <version>2.25.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.25</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <dependencyManagement>
@@ -45,5 +77,22 @@
     <!-- <scope>import</scope> -->
     <!-- </dependency> -->
     <!-- </dependencies> -->
+    <dependencies>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+    </dependencies>
   </dependencyManagement>
 </project>

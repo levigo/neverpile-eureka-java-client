@@ -3,6 +3,9 @@ package com.neverpile.eureka.client.core;
 import java.util.Arrays;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties("_links")
 public class MetadataElement {
   private String schema;
 

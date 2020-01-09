@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.neverpile.eureka.client.core.DocumentFacet;
 import com.neverpile.eureka.client.core.Metadata;
 
-public class MetadataFacet implements DocumentFacet {
+public class MetadataFacet implements DocumentFacet<Metadata> {
 
 
   @Override

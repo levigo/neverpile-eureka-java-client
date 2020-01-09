@@ -33,7 +33,7 @@ public class DocumentBuilderImpl implements DocumentBuilder {
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> contentElement(final String id) {
+  public ContentElementBuilder<DocumentBuilder> contentElement() {
     return new ContentElementBuilderImpl(this);
   }
 
