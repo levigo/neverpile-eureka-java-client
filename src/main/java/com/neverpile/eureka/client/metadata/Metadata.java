@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties("_links")
@@ -17,7 +16,7 @@ public class Metadata {
   private final Map<String, MetadataElement> elements = new HashMap<>();
   
   @JsonAnyGetter
-  public Map<String, MetadataElement> get() {
+  public Map<String, MetadataElement> elements() {
     return elements;
   }
   
@@ -25,11 +24,6 @@ public class Metadata {
   private Metadata set(final String name, final MetadataElement element) {
     elements.put(name, element);
     return this;
-  }
-
-  @JsonIgnore
-  public Map<String, MetadataElement> getElements() {
-    return elements;
   }
 
   @Override

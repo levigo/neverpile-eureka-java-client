@@ -18,7 +18,7 @@ public class AbstractMetadataElementBuilderImpl<P, I> {
     element = new MetadataElement();
     element.setSchema(schema);
     
-    metadata.get().put(schema, element);
+    metadata.elements().put(schema, element);
   }
 
   @SuppressWarnings("unchecked")
