@@ -8,6 +8,7 @@ import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties("_links")
 public class Document {
@@ -45,10 +46,16 @@ public class Document {
     
     @JsonIgnore // handled by custom deserializer
     @SuppressWarnings("unchecked")
-    public <V> Optional<V> facet(final DocumentFacet<V> facet) {
-      return (Optional<V>) Optional.ofNullable(facets.get(facet.getName()));
+    public <V> Optional<V> facet(final Class<? extends DocumentFacet<V>> facet) {
+      try {
+        // FIXME: cache facet instances?
+        return (Optional<V>) Optional.ofNullable(facets.get(facet.newInstance().getName()));
+      } catch (InstantiationException | IllegalAccessException e) {
+        throw new RuntimeException("Can't create facet instance", e);
+      }
     }
 
+    @JsonProperty(required = false)
     public Instant getVersionTimestamp() {
       return versionTimestamp;
     }
