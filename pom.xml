@@ -37,7 +37,16 @@
       <artifactId>jackson-datatype-jdk8</artifactId>
       <version>2.10.1</version>
     </dependency>
-    
+
+    <!-- JAXB is no longer bundled starting with JDK 9. -->
+    <!-- The user is supposed to provide this dependency, if running on a JDK without JAXB support -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.4.0-b180830.0359</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- <dependency> -->
     <!-- <groupId>org.springframework.cloud</groupId> -->
     <!-- <artifactId>spring-cloud-security</artifactId> -->
