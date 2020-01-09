@@ -1,4 +1,4 @@
-package com.neverpile.eureka.client.impl.feign;
+package com.neverpile.eureka.client.content;
 
 import java.io.File;
 import java.io.IOException;

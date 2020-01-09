@@ -9,5 +9,5 @@ public interface DocumentBuilder {
 
   public <F extends DocumentFacetBuilder<DocumentBuilder>> F facet(final F facetBuilder);
   
-  DocumentDto save();
+  Document save();
 }

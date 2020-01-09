@@ -25,12 +25,12 @@ import org.junit.Test;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.neverpile.eureka.client.EurekaClient;
 import com.neverpile.eureka.client.content.ContentElementFacet;
-import com.neverpile.eureka.client.core.ContentElementDto;
+import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.CreationDateFacet;
-import com.neverpile.eureka.client.core.DocumentDto;
-import com.neverpile.eureka.client.core.Metadata;
+import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.ModificationDateFacet;
-import com.neverpile.eureka.client.core.NeverpileClient;
+import com.neverpile.eureka.client.core.NeverpileEurekaClient;
+import com.neverpile.eureka.client.metadata.Metadata;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
 import com.neverpile.eureka.client.metadata.MetadataFacetBuilder;
 
@@ -38,7 +38,7 @@ public class EurekaFeinClientTest {
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
-  private NeverpileClient client;
+  private NeverpileEurekaClient client;
 
   @Before
   public void createClient() {
@@ -56,11 +56,11 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService().getDocument("aDocument");
+    Document document = client.documentService().getDocument("aDocument");
 
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
-    assertThat(document.facet(new CreationDateFacet()).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(new ModificationDateFacet()).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
@@ -76,11 +76,13 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService().getDocument("aDocument");
+    Document document = client.documentService().getDocument("aDocument");
 
-    Metadata metadata = document.facet(new MetadataFacet()).get();
+    Metadata metadata = document.facet(MetadataFacet.class).get();
     assertThat(metadata).isNotNull();
-    assertThat(metadata.get()).containsKey("foo");
+    assertThat(metadata.elements()).containsKey("foo");
+    assertThat(metadata.jsonElement("foo").get().asTree().path("foo").asText()).isEqualTo("bar2");
+    assertThat(metadata.jsonElement("foo").get().asTree().path("bar").asText()).isEqualTo("baz2");
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
@@ -96,9 +98,9 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService().getDocument("aDocument");
+    Document document = client.documentService().getDocument("aDocument");
 
-    List<ContentElementDto> ce = document.facet(new ContentElementFacet()).get();
+    List<ContentElement> ce = document.facet(ContentElementFacet.class).get();
     assertThat(ce).isNotNull();
     assertThat(ce).hasSize(1);
 
@@ -122,7 +124,7 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService() //
+    Document document = client.documentService() //
         .newDocument() //
         .id("aDocument") //
         .contentElement() //
@@ -134,8 +136,8 @@ public class EurekaFeinClientTest {
         .save();
     
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
-    assertThat(document.facet(new CreationDateFacet()).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(new ModificationDateFacet()).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
 
@@ -194,7 +196,7 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService() //
+    Document document = client.documentService() //
         .newDocument() //
         .id("aDocument") //
         .contentElement() //
@@ -209,9 +211,9 @@ public class EurekaFeinClientTest {
         .attach() //
         .save();
     
-    Metadata metadata = document.facet(new MetadataFacet()).get();
+    Metadata metadata = document.facet(MetadataFacet.class).get();
     assertThat(metadata).isNotNull();
-    assertThat(metadata.get()).containsKey("foo");
+    assertThat(metadata.elements()).containsKey("foo");
     
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
   }

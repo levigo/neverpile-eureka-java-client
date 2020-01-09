@@ -1,8 +1,4 @@
-package com.neverpile.eureka.client.impl.feign.metadata;
-
-import com.neverpile.eureka.client.core.Metadata;
-import com.neverpile.eureka.client.impl.feign.AbstractMetadataElementBuilderImpl;
-import com.neverpile.eureka.client.metadata.GenericMetadataElementBuilder;
+package com.neverpile.eureka.client.metadata;
 
 public class GenericMetadataElementBuilderImpl<P>
     extends

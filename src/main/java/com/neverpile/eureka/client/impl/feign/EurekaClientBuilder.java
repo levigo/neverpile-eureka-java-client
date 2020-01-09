@@ -13,10 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.neverpile.eureka.client.content.ContentElementFacet;
+import com.neverpile.eureka.client.content.MultipartFile;
 import com.neverpile.eureka.client.core.CreationDateFacet;
-import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.ModificationDateFacet;
-import com.neverpile.eureka.client.core.NeverpileClient;
+import com.neverpile.eureka.client.core.NeverpileEurekaClient;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
 
 import feign.Feign;
@@ -66,7 +67,7 @@ public class EurekaClientBuilder {
 
     @Override
     public boolean isApplicable(final Object value) {
-      return value instanceof DocumentDto;
+      return value instanceof Document;
     }
   }
 
@@ -158,12 +159,12 @@ public class EurekaClientBuilder {
     return new OAuth2ClientBuilder(this);
   }
 
-  public EurekaClientBuilder requestInterceptor(final RequestInterceptor i) {
+  public EurekaClientBuilder withInterceptor(final RequestInterceptor i) {
     builder.requestInterceptor(i);
     return this;
   }
 
-  public NeverpileClient build() {
+  public NeverpileEurekaClient build() {
     return new FeignNeverpileClient(builder, baseURL);
   }
 

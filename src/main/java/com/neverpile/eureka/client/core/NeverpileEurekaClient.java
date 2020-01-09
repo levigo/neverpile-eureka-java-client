@@ -1,6 +1,6 @@
 package com.neverpile.eureka.client.core;
 
-public interface NeverpileClient {
+public interface NeverpileEurekaClient {
 
   DocumentService documentService();
 

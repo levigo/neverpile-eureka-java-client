@@ -1,7 +1,8 @@
-package com.neverpile.eureka.client.core;
+package com.neverpile.eureka.client.metadata;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -17,7 +18,7 @@ public class Metadata {
   private final Map<String, MetadataElement> elements = new HashMap<>();
   
   @JsonAnyGetter
-  public Map<String, MetadataElement> get() {
+  public Map<String, MetadataElement> elements() {
     return elements;
   }
   
@@ -26,12 +27,17 @@ public class Metadata {
     elements.put(name, element);
     return this;
   }
-
+  
   @JsonIgnore
-  public Map<String, MetadataElement> getElements() {
-    return elements;
+  public MetadataElement element(final String name) {
+    return elements.get(name);
   }
 
+  @JsonIgnore
+  public Optional<JsonMetadataElement> jsonElement(final String name) {
+    return Optional.of(elements.get(name)).map(JsonMetadataElement::new);
+  }
+  
   @Override
   public int hashCode() {
     final int prime = 31;

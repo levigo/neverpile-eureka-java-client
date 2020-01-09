@@ -1,11 +1,8 @@
-package com.neverpile.eureka.client.impl.feign.metadata;
+package com.neverpile.eureka.client.metadata;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.neverpile.eureka.client.core.Metadata;
-import com.neverpile.eureka.client.impl.feign.AbstractMetadataElementBuilderImpl;
-import com.neverpile.eureka.client.metadata.JsonMetadataElementBuilder;
 
 public class JsonMetadataElementBuilderImpl<P>
     extends

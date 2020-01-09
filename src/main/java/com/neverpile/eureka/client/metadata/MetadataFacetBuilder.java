@@ -1,9 +1,8 @@
 package com.neverpile.eureka.client.metadata;
 
-import com.neverpile.eureka.client.core.DocumentFacetBuilder;
-import com.neverpile.eureka.client.impl.feign.metadata.MetadataFacetBuilderImpl;
+import com.neverpile.eureka.client.core.DocumentFacetBuilderInternal;
 
-public interface MetadataFacetBuilder<P> extends DocumentFacetBuilder<P> {
+public interface MetadataFacetBuilder<P> extends DocumentFacetBuilderInternal<P> {
   GenericMetadataElementBuilder<P> genericMetadata(String schema);
   
   JsonMetadataElementBuilder<P> jsonMetadata(String schema);

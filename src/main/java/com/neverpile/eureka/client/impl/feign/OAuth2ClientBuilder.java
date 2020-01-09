@@ -55,7 +55,7 @@ public class OAuth2ClientBuilder {
   }
 
   public EurekaClientBuilder done() {
-    parent.requestInterceptor(oauth2FeignRequestInterceptor());
+    parent.withInterceptor(oauth2FeignRequestInterceptor());
     return parent;
   }
 }

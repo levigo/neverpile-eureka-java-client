@@ -1,10 +1,7 @@
-package com.neverpile.eureka.client.impl.feign;
+package com.neverpile.eureka.client.metadata;
 
 
 import java.io.UnsupportedEncodingException;
-
-import com.neverpile.eureka.client.core.Metadata;
-import com.neverpile.eureka.client.core.MetadataElement;
 
 public class AbstractMetadataElementBuilderImpl<P, I> {
 
@@ -18,7 +15,7 @@ public class AbstractMetadataElementBuilderImpl<P, I> {
     element = new MetadataElement();
     element.setSchema(schema);
     
-    metadata.get().put(schema, element);
+    metadata.elements().put(schema, element);
   }
 
   @SuppressWarnings("unchecked")
