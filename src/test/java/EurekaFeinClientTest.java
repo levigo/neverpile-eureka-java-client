@@ -59,8 +59,8 @@ public class EurekaFeinClientTest {
     Document document = client.documentService().getDocument("aDocument");
 
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
-    assertThat(document.facet(CreationDateFacet.class).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(ModificationDateFacet.class).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(CreationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
@@ -80,7 +80,7 @@ public class EurekaFeinClientTest {
 
     Metadata metadata = document.facet(MetadataFacet.class).get();
     assertThat(metadata).isNotNull();
-    assertThat(metadata.get()).containsKey("foo");
+    assertThat(metadata.elements()).containsKey("foo");
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
@@ -134,8 +134,8 @@ public class EurekaFeinClientTest {
         .save();
     
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
-    assertThat(document.facet(CreationDateFacet.class).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(ModificationDateFacet.class).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(CreationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
 
@@ -211,7 +211,7 @@ public class EurekaFeinClientTest {
     
     Metadata metadata = document.facet(MetadataFacet.class).get();
     assertThat(metadata).isNotNull();
-    assertThat(metadata.get()).containsKey("foo");
+    assertThat(metadata.elements()).containsKey("foo");
     
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
   }
