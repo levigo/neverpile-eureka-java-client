@@ -1,9 +1,10 @@
-package com.neverpile.eureka.client.core;
+package com.neverpile.eureka.client.metadata;
 
 import java.util.Arrays;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.neverpile.eureka.client.core.EncryptionType;
 
 @JsonIgnoreProperties("_links")
 public class MetadataElement {

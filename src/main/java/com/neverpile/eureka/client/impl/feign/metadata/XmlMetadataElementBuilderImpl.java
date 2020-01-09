@@ -14,8 +14,8 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Element;
 
-import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.impl.feign.AbstractMetadataElementBuilderImpl;
+import com.neverpile.eureka.client.metadata.Metadata;
 import com.neverpile.eureka.client.metadata.XmlMetadataElementBuilder;
 
 public class XmlMetadataElementBuilderImpl<P>

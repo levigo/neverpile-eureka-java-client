@@ -16,7 +16,7 @@ import com.neverpile.eureka.client.content.ContentElementFacet;
 import com.neverpile.eureka.client.core.CreationDateFacet;
 import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.ModificationDateFacet;
-import com.neverpile.eureka.client.core.NeverpileClient;
+import com.neverpile.eureka.client.core.NeverpileEurekaClient;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
 
 import feign.Feign;
@@ -163,7 +163,7 @@ public class EurekaClientBuilder {
     return this;
   }
 
-  public NeverpileClient build() {
+  public NeverpileEurekaClient build() {
     return new FeignNeverpileClient(builder, baseURL);
   }
 

@@ -1,4 +1,4 @@
-package com.neverpile.eureka.client.core;
+package com.neverpile.eureka.client.metadata;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -28,9 +28,9 @@ import com.neverpile.eureka.client.content.ContentElementFacet;
 import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.CreationDateFacet;
 import com.neverpile.eureka.client.core.Document;
-import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.core.ModificationDateFacet;
-import com.neverpile.eureka.client.core.NeverpileClient;
+import com.neverpile.eureka.client.core.NeverpileEurekaClient;
+import com.neverpile.eureka.client.metadata.Metadata;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
 import com.neverpile.eureka.client.metadata.MetadataFacetBuilder;
 
@@ -38,7 +38,7 @@ public class EurekaFeinClientTest {
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
-  private NeverpileClient client;
+  private NeverpileEurekaClient client;
 
   @Before
   public void createClient() {

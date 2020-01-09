@@ -1,10 +1,10 @@
 package com.neverpile.eureka.client.impl.feign.metadata;
 
 import com.neverpile.eureka.client.core.Document;
-import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.impl.feign.DocumentFacetBuilderInternal;
 import com.neverpile.eureka.client.metadata.GenericMetadataElementBuilder;
 import com.neverpile.eureka.client.metadata.JsonMetadataElementBuilder;
+import com.neverpile.eureka.client.metadata.Metadata;
 import com.neverpile.eureka.client.metadata.MetadataFacetBuilder;
 import com.neverpile.eureka.client.metadata.XmlMetadataElementBuilder;
 
