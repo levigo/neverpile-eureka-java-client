@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import com.neverpile.eureka.client.core.Digest;
 import com.neverpile.eureka.client.core.DocumentBuilder;
-import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.DocumentService;
 import com.neverpile.eureka.client.core.HashAlgorithm;
 
@@ -22,7 +22,7 @@ public class DocumentServiceImpl implements DocumentService {
   }
 
   @Override
-  public DocumentDto getDocument(final String documentId) {
+  public Document getDocument(final String documentId) {
     return documentServiceTarget.getDocument(documentId);
   }
 

@@ -3,7 +3,7 @@ package com.neverpile.eureka.client.core;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties("_links")
-public class ContentElementDto {
+public class ContentElement {
 
   private String role;
   private String fileName;
@@ -13,7 +13,7 @@ public class ContentElementDto {
   private Digest digest;
   private EncryptionType encryption;
 
-  public ContentElementDto() {
+  public ContentElement() {
   }
 
   public String getOriginalFilename() {

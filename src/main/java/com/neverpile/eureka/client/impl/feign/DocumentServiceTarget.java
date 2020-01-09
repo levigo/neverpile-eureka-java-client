@@ -3,7 +3,7 @@ package com.neverpile.eureka.client.impl.feign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.Document;
 
 import feign.Headers;
 import feign.Param;
@@ -20,14 +20,14 @@ public interface DocumentServiceTarget {
 
   @RequestLine("GET " + url + "/{documentID}")
   @Headers("Accept: application/json")
-  DocumentDto getDocument(@Param("documentID") String documentId);
+  Document getDocument(@Param("documentID") String documentId);
 
   @RequestLine("POST " + url)
-  Object uploadDocument(DocumentDto doc);
+  Object uploadDocument(Document doc);
 
   @RequestLine("POST " + url)
   @Headers("Content-Type: multipart/form-data")
-  DocumentDto uploadDocumentWithContent(@Param("__DOC") DocumentDto doc, @Param("part") MultipartFile content[]);
+  Document uploadDocumentWithContent(@Param("__DOC") Document doc, @Param("part") MultipartFile content[]);
 
   @RequestLine("POST " + url + "/{documentID}/content")
   Object uploadContent(@Param("documentID") String documentId, @Param("part") MultipartFile content);

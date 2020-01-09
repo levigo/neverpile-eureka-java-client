@@ -25,9 +25,9 @@ import org.junit.Test;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.neverpile.eureka.client.EurekaClient;
 import com.neverpile.eureka.client.content.ContentElementFacet;
-import com.neverpile.eureka.client.core.ContentElementDto;
+import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.CreationDateFacet;
-import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.core.ModificationDateFacet;
 import com.neverpile.eureka.client.core.NeverpileClient;
@@ -56,7 +56,7 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService().getDocument("aDocument");
+    Document document = client.documentService().getDocument("aDocument");
 
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
     assertThat(document.facet(new CreationDateFacet()).get()).isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
@@ -76,7 +76,7 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService().getDocument("aDocument");
+    Document document = client.documentService().getDocument("aDocument");
 
     Metadata metadata = document.facet(new MetadataFacet()).get();
     assertThat(metadata).isNotNull();
@@ -96,9 +96,9 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService().getDocument("aDocument");
+    Document document = client.documentService().getDocument("aDocument");
 
-    List<ContentElementDto> ce = document.facet(new ContentElementFacet()).get();
+    List<ContentElement> ce = document.facet(new ContentElementFacet()).get();
     assertThat(ce).isNotNull();
     assertThat(ce).hasSize(1);
 
@@ -122,7 +122,7 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService() //
+    Document document = client.documentService() //
         .newDocument() //
         .id("aDocument") //
         .contentElement() //
@@ -194,7 +194,7 @@ public class EurekaFeinClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    DocumentDto document = client.documentService() //
+    Document document = client.documentService() //
         .newDocument() //
         .id("aDocument") //
         .contentElement() //

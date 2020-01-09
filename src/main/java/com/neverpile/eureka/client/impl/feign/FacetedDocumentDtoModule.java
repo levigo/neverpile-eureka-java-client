@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBase;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.DocumentFacet;
 
 public class FacetedDocumentDtoModule extends SimpleModule {
@@ -64,14 +64,14 @@ public class FacetedDocumentDtoModule extends SimpleModule {
         JavaType valueType = f.getValueType(ctxt.getTypeFactory());
         JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(valueType);
         Object value = deserializer.deserialize(p, ctxt);
-        ((DocumentDto) beanOrClass).facet(f.getName(), value);
+        ((Document) beanOrClass).facet(f.getName(), value);
       }
     }
 
     @Override
     public JsonDeserializer<?> modifyDeserializer(final DeserializationConfig config, final BeanDescription beanDesc,
         final JsonDeserializer<?> deserializer) {
-      if (beanDesc.getBeanClass() == DocumentDto.class) {
+      if (beanDesc.getBeanClass() == Document.class) {
         return new FacetDeserializer((BeanDeserializerBase) deserializer);
       }
       return deserializer;

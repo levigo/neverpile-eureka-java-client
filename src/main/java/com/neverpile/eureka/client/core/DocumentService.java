@@ -12,7 +12,7 @@ public interface DocumentService {
     Digest getDigest();
   }
   
-  DocumentDto getDocument(String documentId);
+  Document getDocument(String documentId);
 
   ContentElementResponse getContentElement(String documentId, String elementId) throws IOException;
 

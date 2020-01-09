@@ -7,8 +7,10 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-public class DocumentDto {
+@JsonIgnoreProperties("_links")
+public class Document {
 
     private String documentId;
     
@@ -16,10 +18,10 @@ public class DocumentDto {
     
     private final Map<String, Object> facets = new HashMap<>();
 
-    public DocumentDto() {
+    public Document() {
     }
 
-    public DocumentDto(final String newId) {
+    public Document(final String newId) {
         this.documentId = newId;
     }
 

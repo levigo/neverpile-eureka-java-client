@@ -22,7 +22,7 @@ public class BasicAuthBuilder {
   }
 
   public EurekaClientBuilder done() {
-    parent.requestInterceptor(new BasicAuthRequestInterceptor(username, password));
+    parent.withInterceptor(new BasicAuthRequestInterceptor(username, password));
     return parent;
   }
 }

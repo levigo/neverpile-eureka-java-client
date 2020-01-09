@@ -1,6 +1,6 @@
 package com.neverpile.eureka.client.impl.feign.metadata;
 
-import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.Metadata;
 import com.neverpile.eureka.client.impl.feign.DocumentFacetBuilderInternal;
 import com.neverpile.eureka.client.metadata.GenericMetadataElementBuilder;
@@ -17,7 +17,7 @@ public class MetadataFacetBuilderImpl<P> implements MetadataFacetBuilder<P>, Doc
   public MetadataFacetBuilderImpl() {
   }
   
-  public void init(final P parent, final DocumentDto document) {
+  public void init(final P parent, final Document document) {
     this.parent = parent;
     document.facet("metadata", metadata);
   }
