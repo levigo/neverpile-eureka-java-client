@@ -9,6 +9,7 @@ import com.neverpile.eureka.client.content.MultipartFile;
 import com.neverpile.eureka.client.core.DocumentBuilder;
 import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.DocumentFacetBuilder;
+import com.neverpile.eureka.client.core.DocumentFacetBuilderInternal;
 
 public class DocumentBuilderImpl implements DocumentBuilder {
 

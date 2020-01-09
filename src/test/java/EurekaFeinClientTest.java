@@ -59,8 +59,8 @@ public class EurekaFeinClientTest {
     Document document = client.documentService().getDocument("aDocument");
 
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
-    assertThat(document.facet(CreationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(ModificationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
@@ -134,8 +134,8 @@ public class EurekaFeinClientTest {
         .save();
     
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
-    assertThat(document.facet(CreationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(ModificationDateFacet.class)).isPresent().isEqualTo(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
 
