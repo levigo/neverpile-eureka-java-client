@@ -81,6 +81,8 @@ public class EurekaFeinClientTest {
     Metadata metadata = document.facet(MetadataFacet.class).get();
     assertThat(metadata).isNotNull();
     assertThat(metadata.elements()).containsKey("foo");
+    assertThat(metadata.jsonElement("foo").get().asTree().path("foo").asText()).isEqualTo("bar2");
+    assertThat(metadata.jsonElement("foo").get().asTree().path("bar").asText()).isEqualTo("baz2");
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
