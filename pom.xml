@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.neverpile.eureka.client</groupId>
   <artifactId>neverpile-eureka-java-client</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <name>neverpile-eureka-java-client</name>
 
   <properties>
@@ -12,7 +12,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
-    <feign-mock.version>10.7.0</feign-mock.version>
     <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
     <opentracing-spring-jaeger-web-starter.version>2.0.3</opentracing-spring-jaeger-web-starter.version>
   </properties>
@@ -21,21 +20,87 @@
     <dependency>
       <groupId>io.github.openfeign</groupId>
       <artifactId>feign-jackson</artifactId>
+      <version>10.7.0</version>
     </dependency>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-security</artifactId>
+      <groupId>io.github.openfeign.form</groupId>
+      <artifactId>feign-form</artifactId>
+      <version>3.8.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jdk8</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+
+    <!-- JAXB is no longer bundled starting with JDK 9. -->
+    <!-- The user is supposed to provide this dependency, if running on a JDK without JAXB support -->
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>2.4.0-b180830.0359</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- <dependency> -->
+    <!-- <groupId>org.springframework.cloud</groupId> -->
+    <!-- <artifactId>spring-cloud-security</artifactId> -->
+    <!-- </dependency> -->
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.13.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <version>2.25.1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.25</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
   <dependencyManagement>
+    <!-- <dependencies> -->
+    <!-- <dependency> -->
+    <!-- <groupId>org.springframework.cloud</groupId> -->
+    <!-- <artifactId>spring-cloud-dependencies</artifactId> -->
+    <!-- <version>${spring-cloud.version}</version> -->
+    <!-- <type>pom</type> -->
+    <!-- <scope>import</scope> -->
+    <!-- </dependency> -->
+    <!-- </dependencies> -->
     <dependencies>
       <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring-cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>2.10.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>2.10.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

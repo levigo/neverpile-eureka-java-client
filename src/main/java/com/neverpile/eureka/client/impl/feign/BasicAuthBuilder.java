@@ -3,11 +3,11 @@ package com.neverpile.eureka.client.impl.feign;
 import feign.auth.BasicAuthRequestInterceptor;
 
 public class BasicAuthBuilder {
-  private final ClientBuilder parent;
+  private final EurekaClientBuilder parent;
   private String username;
   private String password;
 
-  BasicAuthBuilder(final ClientBuilder clientBuilder) {
+  BasicAuthBuilder(final EurekaClientBuilder clientBuilder) {
     this.parent = clientBuilder;
   }
   
@@ -21,7 +21,7 @@ public class BasicAuthBuilder {
     return this;
   }
 
-  public ClientBuilder done() {
+  public EurekaClientBuilder done() {
     parent.requestInterceptor(new BasicAuthRequestInterceptor(username, password));
     return parent;
   }

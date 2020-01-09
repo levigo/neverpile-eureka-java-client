@@ -5,14 +5,11 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.springframework.http.MediaType;
-import org.springframework.security.crypto.codec.Hex;
-
-import com.neverpile.eureka.client.DocumentBuilder;
-import com.neverpile.eureka.client.DocumentService;
-import com.neverpile.eureka.client.model.Digest;
-import com.neverpile.eureka.client.model.DocumentDto;
-import com.neverpile.eureka.client.model.HashAlgorithm;
+import com.neverpile.eureka.client.core.Digest;
+import com.neverpile.eureka.client.core.DocumentBuilder;
+import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.DocumentService;
+import com.neverpile.eureka.client.core.HashAlgorithm;
 
 import feign.Feign;
 import feign.Response;
@@ -38,14 +35,13 @@ public class DocumentServiceImpl implements DocumentService {
   public ContentElementResponse getContentElement(final String documentId, final String elementId) throws IOException {
     Response response = documentServiceTarget.getContentElement(documentId, elementId);
     Digest digest = createDigest(response);
-    
+
     return new ContentElementResponse() {
       @Override
-      public MediaType getMediaType() {
-        return MediaType.parseMediaType( //
-            response.headers().getOrDefault("content-type", Arrays.asList(MediaType.APPLICATION_OCTET_STREAM_VALUE)) //
-                .stream().findFirst().orElse(MediaType.APPLICATION_OCTET_STREAM_VALUE) //
-        );
+      public String getMediaType() {
+        return response.headers().getOrDefault("content-type", Arrays.asList("application/octet-stream")) //
+            .stream().findFirst().orElse("application/octet-stream") //
+        ;
       }
 
       @Override
@@ -63,11 +59,11 @@ public class DocumentServiceImpl implements DocumentService {
   private Digest createDigest(final Response response) throws IOException {
     Optional<String> etagHeader = response.headers().getOrDefault("etag", Arrays.asList()) //
         .stream().findFirst();
-    
+
     Digest digest = null;
-    if(etagHeader.isPresent()) {
+    if (etagHeader.isPresent()) {
       String[] split = etagHeader.get().split(":");
-      if(split.length == 2) {
+      if (split.length == 2) {
         try {
           HashAlgorithm algorithm = HashAlgorithm.fromValue(split[0]);
           digest = new Digest(algorithm, Hex.decode(split[1]));

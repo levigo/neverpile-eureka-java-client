@@ -1,5 +1,8 @@
-package com.neverpile.eureka.client.model;
+package com.neverpile.eureka.client.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties("_links")
 public class ContentElementDto {
 
   private String role;
@@ -8,7 +11,7 @@ public class ContentElementDto {
   private String id;
   private long length;
   private Digest digest;
-
+  private EncryptionType encryption;
 
   public ContentElementDto() {
   }
@@ -64,5 +67,13 @@ public class ContentElementDto {
   
   public void setDigest(final Digest digest) {
     this.digest = digest;
+  }
+
+  public EncryptionType getEncryption() {
+    return encryption;
+  }
+
+  public void setEncryption(final EncryptionType encryption) {
+    this.encryption = encryption;
   }
 }

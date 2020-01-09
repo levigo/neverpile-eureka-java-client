@@ -2,9 +2,10 @@ package com.neverpile.eureka.client.impl.feign;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.Version;
@@ -17,21 +18,21 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBase;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.neverpile.eureka.client.model.DocumentDto;
-import com.neverpile.eureka.client.model.DocumentFacet;
+import com.neverpile.eureka.client.core.DocumentDto;
+import com.neverpile.eureka.client.core.DocumentFacet;
 
-@Component
 public class FacetedDocumentDtoModule extends SimpleModule {
   private static final long serialVersionUID = 1L;
 
-  @Autowired(required = false)
-  private final List<? extends DocumentFacet> facets;
+  private static final Logger LOGGER = LoggerFactory.getLogger(FacetedDocumentDtoModule.class);
 
-  public FacetedDocumentDtoModule(final List<? extends DocumentFacet> facets) {
+  private final List<? extends DocumentFacet<?>> facets;
+
+  public FacetedDocumentDtoModule(final List<? extends DocumentFacet<?>> facets) {
     super(FacetedDocumentDtoModule.class.getSimpleName(), Version.unknownVersion());
 
     this.facets = facets;
-//    setSerializerModifier(new FacetedDocumentDtoSerializerModifier());
+    // setSerializerModifier(new FacetedDocumentDtoSerializerModifier());
     setDeserializerModifier(new FacetedDocumentDtoDeserializerModifier());
   }
 
@@ -41,24 +42,29 @@ public class FacetedDocumentDtoModule extends SimpleModule {
 
       public FacetDeserializer(final BeanDeserializerBase base) {
         super(base);
-
       }
 
       @Override
       protected void handleUnknownProperty(final JsonParser p, final DeserializationContext ctxt,
           final Object beanOrClass, final String propName) throws IOException {
-        facets.stream().filter(f -> f.getName().equals(propName)).forEach(f -> {
-          try {
-            JavaType valueType = f.getValueType(ctxt.getTypeFactory());
-            JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(valueType);
-            Object value = deserializer.deserialize(p, ctxt);
-            ((DocumentDto) beanOrClass).setFacet(f.getName(), value);
-          } catch (Exception e) {
-            // e.printStackTrace();
-            throw new RuntimeException(e);
-          }
-        });
-        super.handleUnknownProperty(p, ctxt, beanOrClass, propName);
+        // silently ignore HATEOAS links
+        if ("_links".equals(propName)) {
+          p.skipChildren();
+          return;
+        }
+
+        Optional<? extends DocumentFacet<?>> facet = facets.stream().filter(
+            f -> f.getName().equals(propName)).findFirst();
+
+        if (!facet.isPresent())
+          LOGGER.warn("Unknown property {} - does the server use facets we don't know about?", propName);
+
+        DocumentFacet<?> f = facet.get();
+        
+        JavaType valueType = f.getValueType(ctxt.getTypeFactory());
+        JsonDeserializer<Object> deserializer = ctxt.findRootValueDeserializer(valueType);
+        Object value = deserializer.deserialize(p, ctxt);
+        ((DocumentDto) beanOrClass).facet(f.getName(), value);
       }
     }
 

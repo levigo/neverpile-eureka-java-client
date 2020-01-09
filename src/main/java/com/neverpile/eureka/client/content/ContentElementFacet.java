@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.neverpile.eureka.client.model.ContentElementDto;
-import com.neverpile.eureka.client.model.DocumentFacet;
+import com.neverpile.eureka.client.core.ContentElementDto;
+import com.neverpile.eureka.client.core.DocumentFacet;
 
-public class ContentElementFacet implements DocumentFacet {
+public class ContentElementFacet implements DocumentFacet<List<ContentElementDto>> {
   @Override
   public String getName() {
     return "contentElements";

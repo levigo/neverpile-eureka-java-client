@@ -1,4 +1,4 @@
-package com.neverpile.eureka.client;
+package com.neverpile.eureka.client.core;
 
 public interface NeverpileClient {
 

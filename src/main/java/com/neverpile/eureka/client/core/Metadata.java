@@ -1,4 +1,4 @@
-package com.neverpile.eureka.client.model;
+package com.neverpile.eureka.client.core;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,9 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties("_links")
 public class Metadata {
   public static Metadata with(final String name, final MetadataElement metadata) {
     return new Metadata().set(name, metadata);

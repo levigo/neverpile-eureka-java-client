@@ -1,10 +1,8 @@
-package com.neverpile.eureka.client;
+package com.neverpile.eureka.client.content;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.function.Supplier;
-
-import org.springframework.http.MediaType;
 
 public interface ContentElementBuilder<P> {
   ContentElementBuilder<P> fileName(String name);
@@ -12,8 +10,6 @@ public interface ContentElementBuilder<P> {
   ContentElementBuilder<P> role(String role);
   
   ContentElementBuilder<P> mediaType(String mediaType);
-  
-  ContentElementBuilder<P> mediaType(MediaType mediaType);
   
   ContentElementBuilder<P> content(InputStream stream);
   
