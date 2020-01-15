@@ -33,7 +33,7 @@ public class JsonMetadataElementBuilderImpl<P>
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
-    return null;
+    return this;
   }
 
 }
