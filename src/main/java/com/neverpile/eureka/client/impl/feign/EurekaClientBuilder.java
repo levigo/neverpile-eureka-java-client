@@ -20,6 +20,7 @@ import com.neverpile.eureka.client.core.ModificationDateFacet;
 import com.neverpile.eureka.client.core.NeverpileEurekaClient;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
 
+import feign.Client;
 import feign.Feign;
 import feign.RequestInterceptor;
 import feign.codec.EncodeException;
@@ -104,7 +105,7 @@ public class EurekaClientBuilder {
   private String baseURL;
 
   private final Feign.Builder builder;
-
+  
   public EurekaClientBuilder() {
     builder = Feign.builder() //
         .errorDecoder(new FeignErrorDecoder()) //
@@ -163,9 +164,14 @@ public class EurekaClientBuilder {
     builder.requestInterceptor(i);
     return this;
   }
+  
+  public EurekaClientBuilder withClient(final Client client) {
+    builder.client(client);
+    return this;
+  }
 
   public NeverpileEurekaClient build() {
-    return new FeignNeverpileClient(builder, baseURL);
+    return new FeignNeverpileClient(builder.build(), baseURL);
   }
 
   public BasicAuthBuilder withBasicAuth() {
