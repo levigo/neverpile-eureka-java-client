@@ -4,7 +4,6 @@ import com.neverpile.eureka.client.core.DocumentService;
 import com.neverpile.eureka.client.core.NeverpileEurekaClient;
 
 import feign.Feign;
-import feign.Feign.Builder;
 
 
 public class FeignNeverpileClient implements NeverpileEurekaClient {
@@ -12,11 +11,11 @@ public class FeignNeverpileClient implements NeverpileEurekaClient {
     return new EurekaClientBuilder();
   }
 
-  private final Builder builder;
+  private final Feign feign;
   private final String baseURI;
 
-  FeignNeverpileClient(final Feign.Builder builder, final String baseURI) {
-    this.builder = builder;
+  FeignNeverpileClient(final Feign feign, final String baseURI) {
+    this.feign = feign;
     this.baseURI = baseURI;
   }
 
@@ -27,6 +26,6 @@ public class FeignNeverpileClient implements NeverpileEurekaClient {
    */
   @Override
   public DocumentService documentService() {
-    return new DocumentServiceImpl(builder, baseURI);
+    return new DocumentServiceImpl(feign, baseURI);
   }
 }

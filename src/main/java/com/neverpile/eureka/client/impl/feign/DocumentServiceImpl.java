@@ -6,19 +6,20 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import com.neverpile.eureka.client.core.Digest;
-import com.neverpile.eureka.client.core.DocumentBuilder;
 import com.neverpile.eureka.client.core.Document;
+import com.neverpile.eureka.client.core.DocumentBuilder;
 import com.neverpile.eureka.client.core.DocumentService;
 import com.neverpile.eureka.client.core.HashAlgorithm;
 
 import feign.Feign;
 import feign.Response;
+import feign.Target;
 
 public class DocumentServiceImpl implements DocumentService {
   private final DocumentServiceTarget documentServiceTarget;
 
-  public DocumentServiceImpl(final Feign.Builder builder, final String baseURI) {
-    documentServiceTarget = builder.target(DocumentServiceTarget.class, baseURI);
+  public DocumentServiceImpl(final Feign feign, final String baseURI) {
+    documentServiceTarget = feign.newInstance(new Target.HardCodedTarget<>(DocumentServiceTarget.class, baseURI));
   }
 
   @Override
