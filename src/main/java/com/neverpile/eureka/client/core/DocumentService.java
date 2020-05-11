@@ -17,4 +17,6 @@ public interface DocumentService {
   ContentElementResponse getContentElement(String documentId, String elementId) throws IOException;
 
   DocumentBuilder newDocument();
+
+  ContentQueryBuilder queryContent(String documentId);
 }

@@ -2,9 +2,14 @@ package com.neverpile.eureka.client.impl.feign;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import com.neverpile.eureka.client.core.ContentQueryBuilder;
 import com.neverpile.eureka.client.core.Digest;
 import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.DocumentBuilder;
@@ -18,6 +23,50 @@ import feign.Target;
 public class DocumentServiceImpl implements DocumentService {
   private final DocumentServiceTarget documentServiceTarget;
 
+  private class ContentQueryBuilderImpl implements ContentQueryBuilder {
+    private final List<String> roles = new ArrayList<>();
+    private final List<String> mediaTypes = new ArrayList<>();
+    private final String documentId;
+    
+    private ContentQueryBuilderImpl(final String documentId) {
+      this.documentId = documentId;
+    }
+    
+    @Override
+    public ContentQueryBuilder withRole(final String role) {
+      roles.add(role);
+      return this;
+    }
+    
+    @Override
+    public ContentQueryBuilder withMediaType(final String mediaType) {
+      mediaTypes.add(mediaType);
+      return this;
+    }
+    
+    @Override
+    public ContentElementResponse getFirst() throws IOException {
+      Map<String, Object> queryMap = queryMap();
+      queryMap.put("return", "first");
+      
+      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap));
+    }
+
+    private Map<String, Object> queryMap() {
+      Map<String,Object> queryMap = new HashMap<>();
+      queryMap.put("role", roles);
+      queryMap.put("mediaType", mediaTypes);
+      return queryMap;
+    }
+    
+    @Override
+    public ContentElementResponse getOnly() throws IOException {
+      Map<String, Object> queryMap = queryMap();
+      queryMap.put("return", "first");
+      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap));
+    }
+  }
+  
   public DocumentServiceImpl(final Feign feign, final String baseURI) {
     documentServiceTarget = feign.newInstance(new Target.HardCodedTarget<>(DocumentServiceTarget.class, baseURI));
   }
@@ -34,7 +83,10 @@ public class DocumentServiceImpl implements DocumentService {
 
   @Override
   public ContentElementResponse getContentElement(final String documentId, final String elementId) throws IOException {
-    Response response = documentServiceTarget.getContentElement(documentId, elementId);
+    return contentElementResponse(documentServiceTarget.getContentElement(documentId, elementId));
+  }
+
+  private ContentElementResponse contentElementResponse(final Response response) throws IOException {
     Digest digest = createDigest(response);
 
     return new ContentElementResponse() {
@@ -74,5 +126,10 @@ public class DocumentServiceImpl implements DocumentService {
       }
     }
     return digest;
+  }
+  
+  @Override
+  public ContentQueryBuilder queryContent(final String documentId) {
+    return new ContentQueryBuilderImpl(documentId);
   }
 }

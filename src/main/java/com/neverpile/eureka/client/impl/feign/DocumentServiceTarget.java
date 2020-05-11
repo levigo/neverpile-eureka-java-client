@@ -1,5 +1,7 @@
 package com.neverpile.eureka.client.impl.feign;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,6 +10,7 @@ import com.neverpile.eureka.client.core.Document;
 
 import feign.Headers;
 import feign.Param;
+import feign.QueryMap;
 import feign.RequestLine;
 import feign.Response;
 
@@ -35,4 +38,7 @@ public interface DocumentServiceTarget {
 
   @RequestLine("GET " + url + "/{documentID}/content/{elementID}")
   Response getContentElement(@Param("documentID") String documentId, @Param("elementID") String elementId);
+  
+  @RequestLine("GET " + url + "/{documentID}/content")
+  Response queryContent(@Param("documentID") String documentId, @QueryMap Map<String, Object> queryMap);
 }
