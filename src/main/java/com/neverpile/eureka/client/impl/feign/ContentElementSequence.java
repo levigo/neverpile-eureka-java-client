@@ -28,6 +28,136 @@ public class ContentElementSequence {
   private InputStream in = null;
   private byte boundary[] = null;
 
+  private final class PartialStreamContentElementResponse implements ContentElementResponse {
+    private final class PartialStreamInputStream extends InputStream {
+      private boolean closed;
+      private boolean partialStreamEOF;
+
+      @Override
+      public void close() throws IOException {
+        closed = true;
+      }
+
+      public int available() throws IOException {
+        verifyState(streamIndex);
+
+        return in.available();
+      }
+
+      private void verifyState(final int streamIndex) throws IOException {
+        if (streamIndex != currentStreamIndex)
+          throw new IOException("Already advanced to the next stream");
+
+        if (closed)
+          throw new IOException("Stream is closed");
+      }
+
+      /**
+       * Read one byte of data from the current part.
+       * 
+       * @return A byte of data, or <strong>-1</strong> if end of file.
+       * @exception IOException If some IO error occured.
+       */
+
+      public int read() throws IOException {
+        verifyState(streamIndex);
+        
+        if(partialStreamEOF)
+          return -1;
+
+        final int ch = in.read();
+        switch (ch){
+          case '\r' :
+            // check for a boundary
+            in.mark(boundary.length + 5);
+            if (in.read() == '\n' && in.read() == '-' && in.read() == '-') {
+              boolean isBoundary = true;
+              for (int i = 0; i < boundary.length; i++)
+                if (((byte) in.read()) != boundary[i]) {
+                  isBoundary = false;
+                  break;
+                }
+
+              if (isBoundary) {
+                if (in.read() == '-') { // last part?
+                  if (in.read() != '-')
+                    throw new IOException("Invalid part boundary: missing second end-of-stream dash");
+                  state = State.END_OF_STREAM;
+                } else 
+                  state = State.END_OF_PART;
+
+                partialStreamEOF = true;
+                in.reset();
+                return -1;
+              }
+            } else {
+              in.reset();
+              return ch;
+            }
+
+            // not reached
+          case -1 :
+            state = State.END_OF_STREAM;
+            partialStreamEOF = true;
+            return -1;
+
+          default :
+            return ch;
+        }
+      }
+
+      /**
+       * Read n bytes of data from the current part.
+       * 
+       * @return the number of bytes data, read or <strong>-1</strong> if end of file.
+       * @exception IOException If some IO error occured.
+       */
+      public int read(final byte b[], final int off, final int len) throws IOException {
+        verifyState(streamIndex);
+
+        int got = 0;
+        int ch;
+        while (got < len) {
+          if ((ch = read()) == -1)
+            return (got == 0) ? -1 : got;
+          b[off + (got++)] = (byte) (ch & 0xFF);
+        }
+        return got;
+      }
+
+      public long skip(long n) throws IOException {
+        verifyState(streamIndex);
+
+        while ((--n >= 0) && (read() != -1))
+          ;
+        return n;
+      }
+    }
+
+    private final int streamIndex;
+    private final Digest digest;
+
+    private PartialStreamContentElementResponse(final int streamIndex, final Digest digest) {
+      this.streamIndex = streamIndex;
+      this.digest = digest;
+    }
+
+    @Override
+    public String getMediaType() {
+      return currentHeaders.computeIfAbsent("content-type", t -> "application/octet-stream");
+    }
+
+    @Override
+    public Digest getDigest() {
+      return digest;
+    }
+
+    @Override
+    public InputStream getContent() throws IOException {
+      return new PartialStreamInputStream();
+    }
+  }
+
   private enum State {
     IDLE, IN_PART, END_OF_PART, END_OF_STREAM, CLOSED
   }
@@ -134,127 +264,7 @@ public class ContentElementSequence {
     } else
       digest = null;
 
-    int streamIndex = ++currentStreamIndex;
-    return new ContentElementResponse() {
-      @Override
-      public String getMediaType() {
-        return currentHeaders.computeIfAbsent("content-type", t -> "application/octet-stream");
-      }
-
-      @Override
-      public Digest getDigest() {
-        return digest;
-      }
-
-      @Override
-      public InputStream getContent() throws IOException {
-        return new InputStream() {
-          private boolean closed;
-          private boolean partialStreamEOF;
-
-          @Override
-          public void close() throws IOException {
-            closed = true;
-          }
-
-          public int available() throws IOException {
-            verifyState(streamIndex);
-
-            return in.available();
-          }
-
-          private void verifyState(final int streamIndex) throws IOException {
-            if (streamIndex != currentStreamIndex)
-              throw new IOException("Already advanced to the next stream");
-
-            if (closed)
-              throw new IOException("Stream is closed");
-          }
-
-          /**
-           * Read one byte of data from the current part.
-           * 
-           * @return A byte of data, or <strong>-1</strong> if end of file.
-           * @exception IOException If some IO error occured.
-           */
-
-          public int read() throws IOException {
-            verifyState(streamIndex);
-            
-            if(partialStreamEOF)
-              return -1;
-
-            final int ch = in.read();
-            switch (ch){
-              case '\r' :
-                // check for a boundary
-                in.mark(boundary.length + 5);
-                if (in.read() == '\n' && in.read() == '-' && in.read() == '-') {
-                  boolean isBoundary = true;
-                  for (int i = 0; i < boundary.length; i++)
-                    if (((byte) in.read()) != boundary[i]) {
-                      isBoundary = false;
-                      break;
-                    }
-
-                  if (isBoundary) {
-                    if (in.read() == '-') { // last part?
-                      if (in.read() != '-')
-                        throw new IOException("Invalid part boundary: missing second end-of-stream dash");
-                      state = State.END_OF_STREAM;
-                    } else 
-                      state = State.END_OF_PART;
-
-                    partialStreamEOF = true;
-                    in.reset();
-                    return -1;
-                  }
-                } else {
-                  in.reset();
-                  return ch;
-                }
-
-                // not reached
-              case -1 :
-                state = State.END_OF_STREAM;
-                partialStreamEOF = true;
-                return -1;
-
-              default :
-                return ch;
-            }
-          }
-
-          /**
-           * Read n bytes of data from the current part.
-           * 
-           * @return the number of bytes data, read or <strong>-1</strong> if end of file.
-           * @exception IOException If some IO error occured.
-           */
-          public int read(final byte b[], final int off, final int len) throws IOException {
-            verifyState(streamIndex);
-
-            int got = 0;
-            int ch;
-            while (got < len) {
-              if ((ch = read()) == -1)
-                return (got == 0) ? -1 : got;
-              b[off + (got++)] = (byte) (ch & 0xFF);
-            }
-            return got;
-          }
-
-          public long skip(long n) throws IOException {
-            verifyState(streamIndex);
-
-            while ((--n >= 0) && (read() != -1))
-              ;
-            return n;
-          }
-
-        };
-      }
-    };
+    return new PartialStreamContentElementResponse(++currentStreamIndex, digest);
   }
 
   private String trimLeadingWhitespace(final String s) {
