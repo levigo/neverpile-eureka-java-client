@@ -1,4 +1,5 @@
 package com.neverpile.eureka.client.impl.feign;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -18,15 +19,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.fileupload.util.Streams;
+import org.hamcrest.CustomMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.neverpile.eureka.client.EurekaClient;
@@ -46,6 +51,9 @@ public class EurekaFeignClientTest {
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
+  @Rule
+  public ExpectedException expected = ExpectedException.none();
+  
   private NeverpileEurekaClient client;
 
   @Before
@@ -68,7 +76,8 @@ public class EurekaFeignClientTest {
 
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
     assertThat(document.facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(
+        Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
@@ -142,10 +151,11 @@ public class EurekaFeignClientTest {
         .mediaType("text/plain") //
         .attach() //
         .save();
-    
+
     assertThat(document.getDocumentId()).isEqualTo("aDocument");
     assertThat(document.facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(
+        Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
 
@@ -218,14 +228,14 @@ public class EurekaFeignClientTest {
         .content("\"foo\":\"bar\"") //
         .attach() //
         .save();
-    
+
     Metadata metadata = document.facet(MetadataFacet.class).get();
     assertThat(metadata).isNotNull();
     assertThat(metadata.elements()).containsKey("foo");
-    
+
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
   }
-  
+
   @Test
   public void testThat_contentQueriesForFirstWork() throws Exception {
     stubFor( //
@@ -256,74 +266,97 @@ public class EurekaFeignClientTest {
         .withHeader("Accept", containing("application/x-something")) //
     );
   }
-  
+
   @Test
   public void testThat_contentQueriesForOnlyWork() throws Exception {
     stubFor( //
         get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
-        .withHeader("Accept", containing("text/plain")) //
-        .withHeader("Accept", containing("application/x-something")) //
-        .willReturn( //
-            aResponse() //
-            .withStatus(200) //
-            .withHeader("Content-Type", "text/plain") //
-            .withBody("Hello, world!")));
-    
+            .withHeader("Accept", containing("text/plain")) //
+            .withHeader("Accept", containing("application/x-something")) //
+            .willReturn( //
+                aResponse() //
+                    .withStatus(200) //
+                    .withHeader("Content-Type", "text/plain") //
+                    .withBody("Hello, world!")));
+
     ContentElementResponse ce = client.documentService().queryContent("aDocument") //
         .withMediaType("text/plain") //
         .withMediaType("application/x-something") //
         .withRole("someRole") //
         .withRole("someOtherRole") //
         .getOnly();
-    
+
     assertThat(ce.getMediaType()).isEqualTo("text/plain");
     assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("Hello, world!");
-    
+
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
         .withQueryParam("role", containing("someRole")) //
         .withQueryParam("role", containing("someOtherRole")) //
         .withQueryParam("return", containing("only")) //
         .withHeader("Accept", containing("text/plain")) //
         .withHeader("Accept", containing("application/x-something")) //
-        );
+    );
   }
-  
+
   @Test
   public void testThat_contentQueriesForAllWork() throws Exception {
     String body = Streams.asString(getClass().getResourceAsStream("multipartStream.txt"));
     stubFor( //
         get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
-        .willReturn( //
-            aResponse() //
-            .withStatus(200) //
-            .withHeader("Content-Type", "multipart/mixed; boundary=QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn;charset=UTF-8") //
-            .withBody(body)));
-    
+            .willReturn( //
+                aResponse() //
+                    .withStatus(200) //
+                    .withHeader("Content-Type",
+                        "multipart/mixed; boundary=QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn;charset=UTF-8") //
+                    .withBody(body)));
+
     ContentElementSequence mis = client.documentService().queryContent("aDocument") //
         .getAll();
-    
+
     ContentElementResponse ce = mis.nextContentElement();
     assertThat(ce.getDigest().getAlgorithm()).isEqualTo(HashAlgorithm.SHA_256);
-    assertThat(ce.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="));
+    assertThat(ce.getDigest().getBytes()).isEqualTo(
+        Base64.getDecoder().decode("LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="));
     assertThat(ce.getMediaType()).isEqualTo("text/plain");
     assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("foo");
-    
+
     ce = mis.nextContentElement();
     assertThat(ce.getDigest().getAlgorithm()).isEqualTo(HashAlgorithm.SHA_256);
-    assertThat(ce.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="));
+    assertThat(ce.getDigest().getBytes()).isEqualTo(
+        Base64.getDecoder().decode("STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="));
     assertThat(ce.getMediaType()).isEqualTo("application/xml");
     assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("<foo>foobar</foo>");
-    
+
     ce = mis.nextContentElement();
     assertThat(ce.getDigest().getAlgorithm()).isEqualTo(HashAlgorithm.SHA_256);
-    assertThat(ce.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
+    assertThat(ce.getDigest().getBytes()).isEqualTo(
+        Base64.getDecoder().decode("7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
     assertThat(ce.getMediaType()).isEqualTo("application/octet-stream");
-    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("The quick brown fox jumped over the lazy dog");
-    
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo(
+        "The quick brown fox jumped over the lazy dog");
+
     assertThat(mis.nextContentElement()).isNull();
-    
+
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
         .withQueryParam("return", containing("all")) //
-        );
+    );
+  }
+
+  @Test()
+  public void testThat_contentElementSequenceConsumptionworks() throws Exception {
+    expected.expect(new CustomMatcher<Object>("Exception message containing 'Already advanced'") {
+      @Override
+      public boolean matches(final Object item) {
+        return item instanceof IOException && ((IOException)item).getMessage().contains("Already advanced");
+      }
+    });
+    ContentElementSequence s = new ContentElementSequence(getClass().getResourceAsStream("multipartStream.txt"),
+        "QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn".getBytes());
+    
+    InputStream stream1 = s.nextContentElement().getContent();
+    
+    s.nextContentElement().getContent();
+    
+    stream1.read(); // can no longer consume this
   }
 }
