@@ -359,4 +359,41 @@ public class EurekaFeignClientTest {
     
     stream1.read(); // can no longer consume this
   }
+
+  @Test
+  public void testThat_oldVersionCanBeRetrieved() throws Exception {
+    stubFor( //
+        get(urlEqualTo("/api/v1/documents/aDocument/history/1970-01-01T00:00:00.042Z")) //
+            .withHeader("Accept", equalTo("application/json")) //
+            .willReturn( //
+                aResponse() //
+                    .withStatus(200) //
+                    .withHeader("Content-Type", "application/json") //
+                    .withBodyFile("exampleDocument.json")));
+
+    Document document = client.documentService().getDocumentVersion("aDocument", Instant.ofEpochMilli(42L));
+
+    assertThat(document.getDocumentId()).isEqualTo("aDocument");
+
+    verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/history/1970-01-01T00:00:00.042Z")));
+  }
+  
+  @Test
+  public void testThat_versionListCanBeRetrieved() throws Exception {
+    stubFor( //
+        get(urlEqualTo("/api/v1/documents/aDocument/history")) //
+        .withHeader("Accept", equalTo("application/json")) //
+        .willReturn( //
+            aResponse() //
+            .withStatus(200) //
+            .withHeader("Content-Type", "application/json") //
+            .withBody("[\"1970-01-01T00:00:00.001Z\", \"1970-01-01T00:00:00.002Z\", \"1970-01-01T00:00:00.003Z\"]")));
+    
+    List<Instant> versions = client.documentService().getVersions("aDocument");
+    
+    assertThat(versions).hasSize(3);
+    assertThat(versions).containsExactly(Instant.ofEpochMilli(1l), Instant.ofEpochMilli(2l), Instant.ofEpochMilli(3l));
+    
+    verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/history")));
+  }
 }

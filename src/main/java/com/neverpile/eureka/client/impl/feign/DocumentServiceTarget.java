@@ -32,6 +32,10 @@ public interface DocumentServiceTarget {
   @Headers("Accept: application/json")
   Document getDocumentVersion(@Param("documentID") String documentId, @Param("versionTimestamp") Instant versionTimestamp);
   
+  @RequestLine("GET " + url + "/{documentID}/history")
+  @Headers("Accept: application/json")
+  List<Instant> getVersions(@Param("documentID") String documentId);
+  
   @RequestLine("POST " + url)
   Object uploadDocument(Document doc);
 
@@ -48,4 +52,5 @@ public interface DocumentServiceTarget {
   @Headers("Accept: {accept}")
   @RequestLine("GET " + url + "/{documentID}/content")
   Response queryContent(@Param("documentID") String documentId, @QueryMap Map<String, Object> queryMap, @Param("accept") List<String> acceptHeaders);
+
 }

@@ -122,6 +122,11 @@ public class DocumentServiceImpl implements DocumentService {
   }
   
   @Override
+  public List<Instant> getVersions(final String documentId) {
+    return documentServiceTarget.getVersions(documentId);
+  }
+  
+  @Override
   public DocumentBuilder newDocument() {
     return new DocumentBuilderImpl(documentServiceTarget);
   }
