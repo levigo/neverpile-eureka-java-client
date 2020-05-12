@@ -1,5 +1,7 @@
 package com.neverpile.eureka.client.impl.feign;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -26,6 +28,10 @@ public interface DocumentServiceTarget {
   @Headers("Accept: application/json")
   Document getDocument(@Param("documentID") String documentId);
 
+  @RequestLine("GET " + url + "/{documentID}/history/{versionTimestamp}")
+  @Headers("Accept: application/json")
+  Document getDocumentVersion(@Param("documentID") String documentId, @Param("versionTimestamp") Instant versionTimestamp);
+  
   @RequestLine("POST " + url)
   Object uploadDocument(Document doc);
 
@@ -39,6 +45,7 @@ public interface DocumentServiceTarget {
   @RequestLine("GET " + url + "/{documentID}/content/{elementID}")
   Response getContentElement(@Param("documentID") String documentId, @Param("elementID") String elementId);
   
+  @Headers("Accept: {accept}")
   @RequestLine("GET " + url + "/{documentID}/content")
-  Response queryContent(@Param("documentID") String documentId, @QueryMap Map<String, Object> queryMap);
+  Response queryContent(@Param("documentID") String documentId, @QueryMap Map<String, Object> queryMap, @Param("accept") List<String> acceptHeaders);
 }

@@ -2,12 +2,17 @@ package com.neverpile.eureka.client.impl.feign;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 
 import com.neverpile.eureka.client.core.ContentQueryBuilder;
 import com.neverpile.eureka.client.core.Digest;
@@ -27,46 +32,81 @@ public class DocumentServiceImpl implements DocumentService {
     private final List<String> roles = new ArrayList<>();
     private final List<String> mediaTypes = new ArrayList<>();
     private final String documentId;
-    
+
     private ContentQueryBuilderImpl(final String documentId) {
       this.documentId = documentId;
     }
-    
+
     @Override
     public ContentQueryBuilder withRole(final String role) {
       roles.add(role);
       return this;
     }
-    
+
     @Override
     public ContentQueryBuilder withMediaType(final String mediaType) {
       mediaTypes.add(mediaType);
       return this;
     }
-    
+
     @Override
     public ContentElementResponse getFirst() throws IOException {
       Map<String, Object> queryMap = queryMap();
       queryMap.put("return", "first");
-      
-      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap));
+
+      if (mediaTypes.isEmpty())
+        mediaTypes.add("*/*");
+
+      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap, mediaTypes));
     }
 
     private Map<String, Object> queryMap() {
-      Map<String,Object> queryMap = new HashMap<>();
+      Map<String, Object> queryMap = new HashMap<>();
       queryMap.put("role", roles);
-      queryMap.put("mediaType", mediaTypes);
       return queryMap;
     }
-    
+
     @Override
     public ContentElementResponse getOnly() throws IOException {
       Map<String, Object> queryMap = queryMap();
-      queryMap.put("return", "first");
-      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap));
+      queryMap.put("return", "only");
+
+      if (mediaTypes.isEmpty())
+        mediaTypes.add("*/*");
+
+      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap, mediaTypes));
+    }
+
+    @Override
+    public MultipartInputStream getAll() throws IOException {
+      Map<String, Object> queryMap = queryMap();
+      queryMap.put("return", "all");
+
+      if (mediaTypes.isEmpty())
+        mediaTypes.add("*/*");
+
+      Response multipartResponse = documentServiceTarget.queryContent(documentId, queryMap, mediaTypes);
+
+      if (multipartResponse.status() != 200)
+        throw new FeignServerException(multipartResponse.status(), multipartResponse.reason());
+
+      try {
+        Collection<String> ctHeaderValues = multipartResponse.headers().get("Content-Type");
+        if (null == ctHeaderValues || ctHeaderValues.isEmpty())
+          throw new IOException("Missing Content-Type header in response");
+
+        MimeType contentType = new MimeType(ctHeaderValues.iterator().next());
+        if (!contentType.match("multipart/mixed") || null == contentType.getParameter("boundary"))
+          throw new IOException("Invalid Content-Type header in response: " + contentType);
+
+        return new MultipartInputStream(multipartResponse.body().asInputStream(),
+            contentType.getParameter("boundary").getBytes());
+      } catch (MimeTypeParseException e) {
+        throw new IOException("Unparseable Content-Type header in response", e);
+      }
     }
   }
-  
+
   public DocumentServiceImpl(final Feign feign, final String baseURI) {
     documentServiceTarget = feign.newInstance(new Target.HardCodedTarget<>(DocumentServiceTarget.class, baseURI));
   }
@@ -76,6 +116,11 @@ public class DocumentServiceImpl implements DocumentService {
     return documentServiceTarget.getDocument(documentId);
   }
 
+  @Override
+  public Document getDocumentVersion(final String documentId, final Instant versionTimestamp) {
+    return documentServiceTarget.getDocumentVersion(documentId, versionTimestamp);
+  }
+  
   @Override
   public DocumentBuilder newDocument() {
     return new DocumentBuilderImpl(documentServiceTarget);
@@ -127,7 +172,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
     return digest;
   }
-  
+
   @Override
   public ContentQueryBuilder queryContent(final String documentId) {
     return new ContentQueryBuilderImpl(documentId);

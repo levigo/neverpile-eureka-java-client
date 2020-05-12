@@ -2,6 +2,7 @@ package com.neverpile.eureka.client.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 
 public interface DocumentService {
   public interface ContentElementResponse {
@@ -14,9 +15,12 @@ public interface DocumentService {
   
   Document getDocument(String documentId);
 
+  Document getDocumentVersion(String id, Instant versionTimestamp);
+  
   ContentElementResponse getContentElement(String documentId, String elementId) throws IOException;
 
   DocumentBuilder newDocument();
 
   ContentQueryBuilder queryContent(String documentId);
+
 }

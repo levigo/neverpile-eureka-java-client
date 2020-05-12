@@ -3,6 +3,7 @@ package com.neverpile.eureka.client.core;
 import java.io.IOException;
 
 import com.neverpile.eureka.client.core.DocumentService.ContentElementResponse;
+import com.neverpile.eureka.client.impl.feign.MultipartInputStream;
 
 /**
  * A builder for content element queries.
@@ -43,5 +44,14 @@ public interface ContentQueryBuilder {
    * @throws IOException
    */
   ContentElementResponse getOnly() throws IOException;
+
+  /**
+   * Return all matching content elements as a {@link MultipartInputStream}. All content element
+   * properties must be retrieved from the headers provided in the stream.
+   * 
+   * @return
+   * @throws IOException
+   */
+  MultipartInputStream getAll() throws IOException;
 
 }

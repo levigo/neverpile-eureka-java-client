@@ -1,0 +1,28 @@
+--QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn
+Content-Disposition: inline; name="part"; filename="foo.txt"; size=3; creation-date="Tue, 12 May 2020 13:05:35 +0200"; modification-date="Tue, 12 May 2020 13:05:35 +0200"
+Last-Modified: Tue, 12 May 2020 11:05:35 GMT
+Content-Type: text/plain
+Content-Length: 3
+ETag: "sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="
+Digest: sha-256=LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=
+
+foo
+--QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn
+Content-Disposition: inline; name="annotations"; filename="foo.xml"; size=17; creation-date="Tue, 12 May 2020 13:05:35 +0200"; modification-date="Tue, 12 May 2020 13:05:35 +0200"
+Last-Modified: Tue, 12 May 2020 11:05:35 GMT
+Content-Type: application/xml
+Content-Length: 17
+ETag: "sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="
+Digest: sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=
+
+<foo>foobar</foo>
+--QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn
+Content-Disposition: inline; name="stuff"; filename="fox.txt"; size=44; creation-date="Tue, 12 May 2020 13:05:35 +0200"; modification-date="Tue, 12 May 2020 13:05:35 +0200"
+Last-Modified: Tue, 12 May 2020 11:05:35 GMT
+Content-Type: application/octet-stream
+Content-Length: 44
+ETag: "sha-256_7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"
+Digest: sha-256=7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69
+
+The quick brown fox jumped over the lazy dog
+--QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn--

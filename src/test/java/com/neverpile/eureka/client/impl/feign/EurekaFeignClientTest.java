@@ -1,5 +1,7 @@
+package com.neverpile.eureka.client.impl.feign;
 import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -14,10 +16,14 @@ import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 
+import org.apache.commons.fileupload.util.Streams;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,13 +34,15 @@ import com.neverpile.eureka.client.content.ContentElementFacet;
 import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.CreationDateFacet;
 import com.neverpile.eureka.client.core.Document;
+import com.neverpile.eureka.client.core.DocumentService.ContentElementResponse;
+import com.neverpile.eureka.client.core.HashAlgorithm;
 import com.neverpile.eureka.client.core.ModificationDateFacet;
 import com.neverpile.eureka.client.core.NeverpileEurekaClient;
 import com.neverpile.eureka.client.metadata.Metadata;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
 import com.neverpile.eureka.client.metadata.MetadataFacetBuilder;
 
-public class EurekaFeinClientTest {
+public class EurekaFeignClientTest {
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
 
@@ -216,5 +224,104 @@ public class EurekaFeinClientTest {
     assertThat(metadata.elements()).containsKey("foo");
     
     verify(postRequestedFor(urlMatching("/api/v1/documents")));
+  }
+  
+  @Test
+  public void testThat_contentQueriesForFirstWork() throws Exception {
+    stubFor( //
+        get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
+            .withHeader("Accept", containing("text/plain")) //
+            .withHeader("Accept", containing("application/x-something")) //
+            .willReturn( //
+                aResponse() //
+                    .withStatus(200) //
+                    .withHeader("Content-Type", "text/plain") //
+                    .withBody("Hello, world!")));
+
+    ContentElementResponse ce = client.documentService().queryContent("aDocument") //
+        .withMediaType("text/plain") //
+        .withMediaType("application/x-something") //
+        .withRole("someRole") //
+        .withRole("someOtherRole") //
+        .getFirst();
+
+    assertThat(ce.getMediaType()).isEqualTo("text/plain");
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("Hello, world!");
+
+    verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
+        .withQueryParam("role", containing("someRole")) //
+        .withQueryParam("role", containing("someOtherRole")) //
+        .withQueryParam("return", containing("first")) //
+        .withHeader("Accept", containing("text/plain")) //
+        .withHeader("Accept", containing("application/x-something")) //
+    );
+  }
+  
+  @Test
+  public void testThat_contentQueriesForOnlyWork() throws Exception {
+    stubFor( //
+        get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
+        .withHeader("Accept", containing("text/plain")) //
+        .withHeader("Accept", containing("application/x-something")) //
+        .willReturn( //
+            aResponse() //
+            .withStatus(200) //
+            .withHeader("Content-Type", "text/plain") //
+            .withBody("Hello, world!")));
+    
+    ContentElementResponse ce = client.documentService().queryContent("aDocument") //
+        .withMediaType("text/plain") //
+        .withMediaType("application/x-something") //
+        .withRole("someRole") //
+        .withRole("someOtherRole") //
+        .getOnly();
+    
+    assertThat(ce.getMediaType()).isEqualTo("text/plain");
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("Hello, world!");
+    
+    verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
+        .withQueryParam("role", containing("someRole")) //
+        .withQueryParam("role", containing("someOtherRole")) //
+        .withQueryParam("return", containing("only")) //
+        .withHeader("Accept", containing("text/plain")) //
+        .withHeader("Accept", containing("application/x-something")) //
+        );
+  }
+  
+  @Test
+  public void testThat_contentQueriesForAllWork() throws Exception {
+    String body = Streams.asString(getClass().getResourceAsStream("multipartStream.txt"));
+    stubFor( //
+        get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
+        .willReturn( //
+            aResponse() //
+            .withStatus(200) //
+            .withHeader("Content-Type", "multipart/mixed; boundary=QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn;charset=UTF-8") //
+            .withBody(body)));
+    
+    MultipartInputStream mis = client.documentService().queryContent("aDocument") //
+        .getAll();
+    
+    ContentElementResponse ce = mis.nextContentElement();
+    assertThat(ce.getDigest().getAlgorithm()).isEqualTo(HashAlgorithm.SHA_256);
+    assertThat(ce.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="));
+    assertThat(ce.getMediaType()).isEqualTo("text/plain");
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("foo");
+    
+    ce = mis.nextContentElement();
+    assertThat(ce.getDigest().getAlgorithm()).isEqualTo(HashAlgorithm.SHA_256);
+    assertThat(ce.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="));
+    assertThat(ce.getMediaType()).isEqualTo("application/xml");
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("<foo>foobar</foo>");
+    
+    ce = mis.nextContentElement();
+    assertThat(ce.getDigest().getAlgorithm()).isEqualTo(HashAlgorithm.SHA_256);
+    assertThat(ce.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
+    assertThat(ce.getMediaType()).isEqualTo("application/octet-stream");
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("The quick brown fox jumped over the lazy dog");
+    
+    verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
+        .withQueryParam("return", containing("all")) //
+        );
   }
 }
