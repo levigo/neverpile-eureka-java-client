@@ -299,7 +299,7 @@ public class EurekaFeignClientTest {
             .withHeader("Content-Type", "multipart/mixed; boundary=QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn;charset=UTF-8") //
             .withBody(body)));
     
-    MultipartInputStream mis = client.documentService().queryContent("aDocument") //
+    ContentElementSequence mis = client.documentService().queryContent("aDocument") //
         .getAll();
     
     ContentElementResponse ce = mis.nextContentElement();
@@ -319,6 +319,8 @@ public class EurekaFeignClientTest {
     assertThat(ce.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"));
     assertThat(ce.getMediaType()).isEqualTo("application/octet-stream");
     assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("The quick brown fox jumped over the lazy dog");
+    
+    assertThat(mis.nextContentElement()).isNull();
     
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
         .withQueryParam("return", containing("all")) //

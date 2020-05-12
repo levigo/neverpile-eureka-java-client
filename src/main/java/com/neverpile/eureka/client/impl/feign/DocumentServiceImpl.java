@@ -78,7 +78,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public MultipartInputStream getAll() throws IOException {
+    public ContentElementSequence getAll() throws IOException {
       Map<String, Object> queryMap = queryMap();
       queryMap.put("return", "all");
 
@@ -99,7 +99,7 @@ public class DocumentServiceImpl implements DocumentService {
         if (!contentType.match("multipart/mixed") || null == contentType.getParameter("boundary"))
           throw new IOException("Invalid Content-Type header in response: " + contentType);
 
-        return new MultipartInputStream(multipartResponse.body().asInputStream(),
+        return new ContentElementSequence(multipartResponse.body().asInputStream(),
             contentType.getParameter("boundary").getBytes());
       } catch (MimeTypeParseException e) {
         throw new IOException("Unparseable Content-Type header in response", e);

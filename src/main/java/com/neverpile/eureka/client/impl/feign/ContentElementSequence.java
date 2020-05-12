@@ -24,8 +24,7 @@ import com.neverpile.eureka.client.core.HashAlgorithm;
  * streams, as defined by the RFC 1521. It prvides a sequential interface to all MIME parts, and for
  * each part it delivers a suitable InputStream for getting its body.
  */
-
-public class MultipartInputStream extends InputStream {
+public class ContentElementSequence extends InputStream {
   InputStream in = null;
   byte boundary[] = null;
   byte buffer[] = null;
@@ -104,7 +103,8 @@ public class MultipartInputStream extends InputStream {
   }
   
   public ContentElementResponse nextContentElement() throws IOException {
-    advanceToNextStream();
+    if(!advanceToNextStream())
+      return null;
     
     String digestHeader = currentHeaders.getOrDefault("digest", "");
 
@@ -137,7 +137,7 @@ public class MultipartInputStream extends InputStream {
 
       @Override
       public InputStream getContent() throws IOException {
-        return MultipartInputStream.this;
+        return ContentElementSequence.this;
       }
     };
   }
@@ -276,7 +276,7 @@ public class MultipartInputStream extends InputStream {
    * @param boundary The input stream MIME boundary.
    */
 
-  public MultipartInputStream(final InputStream in, final byte boundary[]) {
+  public ContentElementSequence(final InputStream in, final byte boundary[]) {
     this.in = (in.markSupported() ? in : new BufferedInputStream(in, boundary.length + 5));
     this.boundary = boundary;
     this.buffer = new byte[boundary.length];
