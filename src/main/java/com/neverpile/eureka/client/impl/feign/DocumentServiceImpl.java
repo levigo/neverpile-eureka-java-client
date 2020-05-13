@@ -1,5 +1,6 @@
 package com.neverpile.eureka.client.impl.feign;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -10,10 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.ContentQueryBuilder;
 import com.neverpile.eureka.client.core.Digest;
 import com.neverpile.eureka.client.core.Document;
@@ -28,14 +31,9 @@ import feign.Target;
 public class DocumentServiceImpl implements DocumentService {
   private final DocumentServiceTarget documentServiceTarget;
 
-  private class ContentQueryBuilderImpl implements ContentQueryBuilder {
+  private abstract class ContentQueryBuilderImpl implements ContentQueryBuilder {
     private final List<String> roles = new ArrayList<>();
     private final List<String> mediaTypes = new ArrayList<>();
-    private final String documentId;
-
-    private ContentQueryBuilderImpl(final String documentId) {
-      this.documentId = documentId;
-    }
 
     @Override
     public ContentQueryBuilder withRole(final String role) {
@@ -57,8 +55,10 @@ public class DocumentServiceImpl implements DocumentService {
       if (mediaTypes.isEmpty())
         mediaTypes.add("*/*");
 
-      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap, mediaTypes));
+      return contentElementResponse(doQuery(queryMap, mediaTypes));
     }
+
+    protected abstract Response doQuery(Map<String, Object> queryMap, List<String> mediaTypes);
 
     private Map<String, Object> queryMap() {
       Map<String, Object> queryMap = new HashMap<>();
@@ -74,7 +74,7 @@ public class DocumentServiceImpl implements DocumentService {
       if (mediaTypes.isEmpty())
         mediaTypes.add("*/*");
 
-      return contentElementResponse(documentServiceTarget.queryContent(documentId, queryMap, mediaTypes));
+      return contentElementResponse(doQuery(queryMap, mediaTypes));
     }
 
     @Override
@@ -85,7 +85,7 @@ public class DocumentServiceImpl implements DocumentService {
       if (mediaTypes.isEmpty())
         mediaTypes.add("*/*");
 
-      Response multipartResponse = documentServiceTarget.queryContent(documentId, queryMap, mediaTypes);
+      Response multipartResponse = doQuery(queryMap, mediaTypes);
 
       if (multipartResponse.status() != 200)
         throw new FeignServerException(multipartResponse.status(), multipartResponse.reason());
@@ -120,12 +120,12 @@ public class DocumentServiceImpl implements DocumentService {
   public Document getDocumentVersion(final String documentId, final Instant versionTimestamp) {
     return documentServiceTarget.getDocumentVersion(documentId, versionTimestamp);
   }
-  
+
   @Override
   public List<Instant> getVersions(final String documentId) {
     return documentServiceTarget.getVersions(documentId);
   }
-  
+
   @Override
   public DocumentBuilder newDocument() {
     return new DocumentBuilderImpl(documentServiceTarget);
@@ -180,6 +180,40 @@ public class DocumentServiceImpl implements DocumentService {
 
   @Override
   public ContentQueryBuilder queryContent(final String documentId) {
-    return new ContentQueryBuilderImpl(documentId);
+    return new ContentQueryBuilderImpl() {
+      @Override
+      protected Response doQuery(final Map<String, Object> queryMap, final List<String> mediaTypes) {
+        return documentServiceTarget.queryContent(documentId, queryMap, mediaTypes);
+      }
+    };
+  }
+
+  @Override
+  public ContentQueryBuilder queryContent(final String documentId, final Instant versionTimestamp) {
+    return new ContentQueryBuilderImpl() {
+      @Override
+      protected Response doQuery(final Map<String, Object> queryMap, final List<String> mediaTypes) {
+        return documentServiceTarget.queryContent(documentId, versionTimestamp, queryMap, mediaTypes);
+      }
+    };
+  }
+
+  @Override
+  public ContentElement updateContentElement(final String documentId, final String contentElementId, final InputStream is,
+      final String mediaType) {
+    return documentServiceTarget.updateContentElement(is, documentId, contentElementId, mediaType);
+  }
+
+  @Override
+  public ContentElement updateContentElement(final String documentId, final String contentElementId, final Supplier<InputStream> iss,
+      final String mediaType) {
+    return documentServiceTarget.updateContentElement(iss.get(), documentId, contentElementId, mediaType);
+  }
+
+  @Override
+  public ContentElement updateContentElement(final String documentId, final String contentElementId, final byte[] data,
+      final String mediaType) {
+    return documentServiceTarget.updateContentElement(new ByteArrayInputStream(data), documentId, contentElementId,
+        mediaType);
   }
 }

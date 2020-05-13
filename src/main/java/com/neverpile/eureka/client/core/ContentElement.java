@@ -16,11 +16,6 @@ public class ContentElement {
   public ContentElement() {
   }
 
-  public String getOriginalFilename() {
-    return fileName;
-  }
-
-  
   public String getType() {
     return type;
   }

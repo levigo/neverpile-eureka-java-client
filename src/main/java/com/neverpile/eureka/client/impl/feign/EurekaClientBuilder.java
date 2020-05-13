@@ -2,9 +2,12 @@ package com.neverpile.eureka.client.impl.feign;
 
 import static feign.form.ContentProcessor.CRLF;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,8 +25,11 @@ import com.neverpile.eureka.client.metadata.MetadataFacet;
 
 import feign.Client;
 import feign.Feign;
+import feign.Request;
 import feign.RequestInterceptor;
+import feign.RequestTemplate;
 import feign.codec.EncodeException;
+import feign.codec.Encoder;
 import feign.form.ContentType;
 import feign.form.FormEncoder;
 import feign.form.MultipartFormContentProcessor;
@@ -101,6 +107,34 @@ public class EurekaClientBuilder {
       return value instanceof MultipartFile[];
     }
   }
+  
+  private final class InputStreamEncoder implements Encoder {
+    private final Encoder delegate;
+
+    public InputStreamEncoder(final Encoder delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void encode(final Object object, final Type bodyType, final RequestTemplate template) throws EncodeException {
+      if(object instanceof InputStream) {
+        InputStream is = (InputStream) object;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        
+        byte buffer[] = new byte[8192];
+        int r;
+        try {
+          while((r = is.read(buffer)) > 0)
+            output.write(buffer, 0, r);
+        } catch (IOException e) {
+          throw new EncodeException("Can't encode InputSuream", e);
+        }
+        
+        template.body(Request.Body.encoded(output.toByteArray(), StandardCharsets.UTF_8));
+      } else
+        delegate.encode(object, bodyType, template);
+    }
+  }
 
   private String baseURL;
 
@@ -120,7 +154,7 @@ public class EurekaClientBuilder {
   private FormEncoder createEncoder() {
     ObjectMapper jackson = jackson();
 
-    FormEncoder formEncoder = new FormEncoder(new JacksonEncoder(jackson));
+    FormEncoder formEncoder = new FormEncoder(new InputStreamEncoder(new JacksonEncoder(jackson)));
 
     MultipartFormContentProcessor mfcp = (MultipartFormContentProcessor) formEncoder.getContentProcessor(
         ContentType.MULTIPART);

@@ -10,6 +10,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.matching;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.put;
+import static com.github.tomakehurst.wiremock.client.WireMock.putRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
@@ -26,13 +28,13 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
-import org.apache.commons.fileupload.util.Streams;
 import org.hamcrest.CustomMatcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.neverpile.eureka.client.EurekaClient;
 import com.neverpile.eureka.client.content.ContentElementFacet;
@@ -300,7 +302,6 @@ public class EurekaFeignClientTest {
 
   @Test
   public void testThat_contentQueriesForAllWork() throws Exception {
-    String body = Streams.asString(getClass().getResourceAsStream("multipartStream.txt"));
     stubFor( //
         get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
             .willReturn( //
@@ -308,7 +309,7 @@ public class EurekaFeignClientTest {
                     .withStatus(200) //
                     .withHeader("Content-Type",
                         "multipart/mixed; boundary=QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn;charset=UTF-8") //
-                    .withBody(body)));
+                    .withBodyFile("multipartStream.txt")));
 
     ContentElementSequence mis = client.documentService().queryContent("aDocument") //
         .getAll();
@@ -341,6 +342,37 @@ public class EurekaFeignClientTest {
         .withQueryParam("return", containing("all")) //
     );
   }
+  
+  @Test
+  public void testThat_contentQueriesAgainstHistoryWork() throws Exception {
+    stubFor( //
+        get(urlMatching("/api/v1/documents/aDocument/history/1970-01-01T00:00:00.042Z/content\\?.*")) //
+        .willReturn( //
+            aResponse() //
+            .withStatus(200) //
+            .withHeader("Content-Type",
+                "multipart/mixed; boundary=QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn;charset=UTF-8") //
+            .withBodyFile("multipartStream.txt")));
+    
+    ContentElementSequence mis = client.documentService().queryContent("aDocument", Instant.ofEpochMilli(42)) //
+        .getAll();
+    
+    ContentElementResponse ce = mis.nextContentElement();
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("foo");
+    
+    ce = mis.nextContentElement();
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo("<foo>foobar</foo>");
+    
+    ce = mis.nextContentElement();
+    assertThat(new BufferedReader(new InputStreamReader(ce.getContent())).readLine()).isEqualTo(
+        "The quick brown fox jumped over the lazy dog");
+    
+    assertThat(mis.nextContentElement()).isNull();
+    
+    verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/history/1970-01-01T00:00:00.042Z/content\\\\?.*")) //
+        .withQueryParam("return", containing("all")) //
+        );
+  }
 
   @Test()
   public void testThat_contentElementSequenceConsumptionworks() throws Exception {
@@ -350,7 +382,7 @@ public class EurekaFeignClientTest {
         return item instanceof IOException && ((IOException)item).getMessage().contains("Already advanced");
       }
     });
-    ContentElementSequence s = new ContentElementSequence(getClass().getResourceAsStream("multipartStream.txt"),
+    ContentElementSequence s = new ContentElementSequence(getClass().getResourceAsStream("/__files/multipartStream.txt"),
         "QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn".getBytes());
     
     InputStream stream1 = s.nextContentElement().getContent();
@@ -395,5 +427,30 @@ public class EurekaFeignClientTest {
     assertThat(versions).containsExactly(Instant.ofEpochMilli(1l), Instant.ofEpochMilli(2l), Instant.ofEpochMilli(3l));
     
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/history")));
+  }
+  
+  @Test
+  public void testThat_contentElementCanBeUpdated() throws Exception {
+    stubFor( //
+        put(urlEqualTo("/api/v1/documents/aDocument/content/someContentElementId")) //
+        .withHeader("Accept", equalTo("application/json")) //
+        .withHeader("Content-Type", equalTo("text/plain")) //
+        .withRequestBody(WireMock.equalTo("Hello, world!")) //
+        .willReturn( //
+            aResponse() //
+            .withStatus(200) //
+            .withHeader("Content-Type", "application/json") //
+            .withBodyFile("updatedContentElement.json")));
+    
+    ContentElement updated = client.documentService().updateContentElement("aDocument", "someContentElementId", "Hello, world!".getBytes(), "text/plain");
+    
+    assertThat(updated.getId()).isEqualTo("anUpdatedId");
+    assertThat(updated.getType()).isEqualTo("text/plain");
+    assertThat(updated.getFileName()).isEqualTo("aFileName.txt");
+    assertThat(updated.getRole()).isEqualTo("part");
+    assertThat(updated.getDigest().getAlgorithm()).isEqualTo(HashAlgorithm.SHA_256);
+    assertThat(updated.getDigest().getBytes()).isEqualTo(Base64.getDecoder().decode("sWrtbVRuHGOC8ZCGUgSUN1Cv/sM8m40mgqRRW71154c="));
+    
+    verify(putRequestedFor(urlMatching("/api/v1/documents/aDocument/content/someContentElementId")));
   }
 }
