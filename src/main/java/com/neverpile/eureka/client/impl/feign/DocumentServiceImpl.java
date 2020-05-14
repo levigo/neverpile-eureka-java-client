@@ -1,7 +1,6 @@
 package com.neverpile.eureka.client.impl.feign;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -240,21 +239,6 @@ public class DocumentServiceImpl implements DocumentService {
   @Override
   public ContentElement addContentElement(final String documentId, final InputStream is, final String mediaType, final String role, final String filename) {
     MultipartFile f = new MultipartFile() {
-      @Override
-      public void transferTo(final File dest) throws IOException, IllegalStateException {
-        throw new UnsupportedOperationException();
-      }
-
-      @Override
-      public boolean isEmpty() {
-        return false;
-      }
-
-      @Override
-      public long getSize() {
-        return -1L;
-      }
-
       @Override
       public String getOriginalFilename() {
         return null != filename && filename.length() > 0 ? filename : "unknown.dat";

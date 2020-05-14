@@ -21,13 +21,6 @@ public class ContentElementBuilderImpl<P> implements ContentElementBuilder<P> {
 
   private Supplier<InputStream> streamSupplier;
 
-  private Supplier<Long> sizeSupplier = new Supplier<Long>() {
-    @Override
-    public Long get() {
-      return -1L;
-    }
-  };
-
   private final Consumer<MultipartFile> fileConsumer;
 
   public ContentElementBuilderImpl(final P documentBuilderImpl, final Consumer<MultipartFile> fileConsumer) {
@@ -78,12 +71,6 @@ public class ContentElementBuilderImpl<P> implements ContentElementBuilder<P> {
         return new ByteArrayInputStream(content);
       }
     };
-    sizeSupplier = new Supplier<Long>() {
-      @Override
-      public Long get() {
-        return (long) content.length;
-      }
-    };
     return this;
   }
 
@@ -99,33 +86,12 @@ public class ContentElementBuilderImpl<P> implements ContentElementBuilder<P> {
         }
       }
     };
-    sizeSupplier = new Supplier<Long>() {
-      @Override
-      public Long get() {
-        return content.length();
-      }
-    };
     return this;
   }
 
   @Override
   public P attach() {
     fileConsumer.accept(new MultipartFile() {
-      @Override
-      public void transferTo(final File dest) throws IOException, IllegalStateException {
-        throw new UnsupportedOperationException();
-      }
-
-      @Override
-      public boolean isEmpty() {
-        return false;
-      }
-
-      @Override
-      public long getSize() {
-        return sizeSupplier.get();
-      }
-
       @Override
       public String getOriginalFilename() {
         return null != name && name.length() > 0 ? name : "unknown.dat";
