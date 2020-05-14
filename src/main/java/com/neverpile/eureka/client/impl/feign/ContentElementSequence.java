@@ -11,6 +11,7 @@ package com.neverpile.eureka.client.impl.feign;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,14 +40,13 @@ public class ContentElementSequence {
       }
 
       public int available() throws IOException {
-        verifyState(streamIndex);
+        verifyState();
 
         return in.available();
       }
 
-      private void verifyState(final int streamIndex) throws IOException {
-        if (streamIndex != currentStreamIndex)
-          throw new IOException("Already advanced to the next stream");
+      private void verifyState() throws IOException {
+        PartialStreamContentElementResponse.this.verifyState();
 
         if (closed)
           throw new IOException("Stream is closed");
@@ -60,7 +60,7 @@ public class ContentElementSequence {
        */
 
       public int read() throws IOException {
-        verifyState(streamIndex);
+        verifyState();
         
         if(partialStreamEOF)
           return -1;
@@ -113,7 +113,7 @@ public class ContentElementSequence {
        * @exception IOException If some IO error occured.
        */
       public int read(final byte b[], final int off, final int len) throws IOException {
-        verifyState(streamIndex);
+        verifyState();
 
         int got = 0;
         int ch;
@@ -126,7 +126,7 @@ public class ContentElementSequence {
       }
 
       public long skip(long n) throws IOException {
-        verifyState(streamIndex);
+        verifyState();
 
         while ((--n >= 0) && (read() != -1))
           ;
@@ -136,15 +136,21 @@ public class ContentElementSequence {
 
     private final int streamIndex;
     private final Digest digest;
+    private final String mediaType;
+    private final Instant versionTimestamp;
 
     private PartialStreamContentElementResponse(final int streamIndex, final Digest digest) {
       this.streamIndex = streamIndex;
       this.digest = digest;
+      this.mediaType = currentHeaders.computeIfAbsent("content-type", t -> "application/octet-stream");
+      
+      String h = currentHeaders.getOrDefault("x-npe-document-version-timestamp", "-");
+      this.versionTimestamp = h.length() > 1 ? Instant.parse(h) : null;
     }
 
     @Override
     public String getMediaType() {
-      return currentHeaders.computeIfAbsent("content-type", t -> "application/octet-stream");
+      return mediaType;
     }
 
     @Override
@@ -153,8 +159,19 @@ public class ContentElementSequence {
     }
 
     @Override
+    public Instant getVersionTimestamp() {
+      return versionTimestamp;
+    }
+    
+    @Override
     public InputStream getContent() throws IOException {
+      verifyState();
       return new PartialStreamInputStream();
+    }
+
+    private void verifyState() {
+      if (streamIndex != currentStreamIndex)
+        throw new IllegalStateException("Already advanced to the next stream");
     }
   }
 

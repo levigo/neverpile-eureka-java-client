@@ -6,8 +6,8 @@ import java.util.List;
 import com.neverpile.eureka.client.content.ContentElementBuilder;
 import com.neverpile.eureka.client.content.ContentElementBuilderImpl;
 import com.neverpile.eureka.client.content.MultipartFile;
-import com.neverpile.eureka.client.core.DocumentBuilder;
 import com.neverpile.eureka.client.core.Document;
+import com.neverpile.eureka.client.core.DocumentBuilder;
 import com.neverpile.eureka.client.core.DocumentFacetBuilder;
 import com.neverpile.eureka.client.core.DocumentFacetBuilderInternal;
 
@@ -37,16 +37,12 @@ public class DocumentBuilderImpl implements DocumentBuilder {
 
   @Override
   public ContentElementBuilder<DocumentBuilder> contentElement() {
-    return new ContentElementBuilderImpl(this);
+    return new ContentElementBuilderImpl<DocumentBuilder>(this, parts::add);
   }
 
   @Override
   public Document save() {
     return documentServiceTarget.uploadDocumentWithContent(document, parts.toArray(new MultipartFile[parts.size()]));
-  }
-
-  public void add(final MultipartFile multipartFile) {
-    parts.add(multipartFile);
   }
 
 }

@@ -1,6 +1,6 @@
 {
     "documentId": "aDocument",
-    "versionTimestamp": null,
+    "versionTimestamp": "1970-01-01T00:00:00.001Z",
     "_links": {
         "metadata": {
             "href": "https://neverpile.sol-01.k8s.levigo.net/api/v1/documents/5c32e0a9-2325-48d1-a1f0-9e77f8f1ec2d/metadata"
@@ -36,7 +36,7 @@
     "dateCreated": "2019-12-09T14:25:53.747Z",
     "contentElements": [
         {
-            "fileName": null,
+            "fileName": "foo.txt",
             "role": "part",
             "type": "text/plain",
             "encryption": "SHARED",

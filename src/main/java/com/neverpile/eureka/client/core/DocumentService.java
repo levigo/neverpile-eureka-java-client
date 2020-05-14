@@ -6,13 +6,38 @@ import java.time.Instant;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.neverpile.eureka.client.content.ContentElementListBuilder;
+
 public interface DocumentService {
   public interface ContentElementResponse {
+    /**
+     * The element's media type.
+     * 
+     * @return the media type
+     */
     String getMediaType();
 
+    /**
+     * The element's digest.
+     * 
+     * @return the digest
+     */
+    Digest getDigest();
+
+    /**
+     * Return the element payload stream.
+     * 
+     * @return the payload stream
+     * @throws IOException
+     */
     InputStream getContent() throws IOException;
 
-    Digest getDigest();
+    /**
+     * Return the enclosing document's version timestamp.
+     * 
+     * @return the version timestamp
+     */
+    Instant getVersionTimestamp();
   }
 
   /**
@@ -75,7 +100,28 @@ public interface DocumentService {
    * @return a ContentQueryBuilder
    */
   ContentQueryBuilder queryContent(String documentId, Instant versionTimestamp);
+  
+  /**
+   * Add an content element to an existing document using the contents of the
+   * given input stream. 
+   * 
+   * @param documentId the id of the document to update
+   * @param is the input stream from which to update the content element
+   * @param mediaType the media type of the supplied content
+   * @param role the element role
+   * @param filename TODO
+   * @return the {@link ContentElement} descriptor of the updated element
+   */
+  ContentElement addContentElement(String documentId, InputStream is, String mediaType, String role, String filename);
 
+  /**
+   * Add multiple content elements in one go.
+   * 
+   * @param documentId the document to add content to.
+   * @return a builder used to attach the content elements to be added
+   */
+  ContentElementListBuilder addContent(String documentId);
+  
   /**
    * Update an existing content element by replacing its content stream with the contents of the
    * given input stream. Updating a content element may, depending on the configuration of the
@@ -102,7 +148,8 @@ public interface DocumentService {
    * @param mediaType the media type of the supplied content
    * @return the {@link ContentElement} descriptor of the updated element
    */
-  ContentElement updateContentElement(String documentId, String contentElementId, Supplier<InputStream> iss, String mediaType);
+  ContentElement updateContentElement(String documentId, String contentElementId, Supplier<InputStream> iss,
+      String mediaType);
 
   /**
    * Update an existing content element by replacing its content stream with the contents of the

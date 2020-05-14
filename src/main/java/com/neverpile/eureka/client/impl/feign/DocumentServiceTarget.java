@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.neverpile.eureka.client.content.MultipartFile;
-import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.Document;
 
 import feign.Headers;
@@ -44,10 +43,11 @@ public interface DocumentServiceTarget {
 
   @RequestLine("POST " + url)
   @Headers("Content-Type: multipart/form-data")
-  Document uploadDocumentWithContent(@Param("__DOC") Document doc, @Param("part") MultipartFile content[]);
+  Document uploadDocumentWithContent(@Param("__DOC") Document doc, @Param("*") MultipartFile content[]);
 
   @RequestLine("POST " + url + "/{documentID}/content")
-  Object uploadContent(@Param("documentID") String documentId, @Param("part") MultipartFile content);
+  @Headers("Content-Type: multipart/form-data")
+  Document addContentElement(@Param("documentID") String documentId, @Param("*") MultipartFile content[]);
 
   @RequestLine("GET " + url + "/{documentID}/content/{elementID}")
   Response getContentElement(@Param("documentID") String documentId, @Param("elementID") String elementId);
@@ -64,7 +64,7 @@ public interface DocumentServiceTarget {
 
   @Headers({"Content-Type: {contentType}", "Accept: application/json"})
   @RequestLine("PUT " + url + "/{documentID}/content/{elementID}")
-  ContentElement updateContentElement(InputStream body, @Param("documentID") String documentId,
+  Response updateContentElement(InputStream body, @Param("documentID") String documentId,
       @Param("elementID") String contentElementId, @Param("contentType") String mediaType);
 
 }

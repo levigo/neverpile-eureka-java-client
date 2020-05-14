@@ -205,7 +205,7 @@ public class EurekaClientBuilder {
   }
 
   public NeverpileEurekaClient build() {
-    return new FeignNeverpileClient(builder.build(), baseURL);
+    return new FeignNeverpileClient(builder.build(), jackson(), baseURL);
   }
 
   public BasicAuthBuilder withBasicAuth() {

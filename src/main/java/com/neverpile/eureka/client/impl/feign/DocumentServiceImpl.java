@@ -1,6 +1,7 @@
 package com.neverpile.eureka.client.impl.feign;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -16,6 +17,12 @@ import java.util.function.Supplier;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.neverpile.eureka.client.content.ContentElementBuilder;
+import com.neverpile.eureka.client.content.ContentElementBuilderImpl;
+import com.neverpile.eureka.client.content.ContentElementFacet;
+import com.neverpile.eureka.client.content.ContentElementListBuilder;
+import com.neverpile.eureka.client.content.MultipartFile;
 import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.ContentQueryBuilder;
 import com.neverpile.eureka.client.core.Digest;
@@ -29,7 +36,9 @@ import feign.Response;
 import feign.Target;
 
 public class DocumentServiceImpl implements DocumentService {
+  static final String VERSION_TIMESTAMP_HEADER = "X-NPE-Document-Version-Timestamp";
   private final DocumentServiceTarget documentServiceTarget;
+  private final ObjectMapper objectMapper;
 
   private abstract class ContentQueryBuilderImpl implements ContentQueryBuilder {
     private final List<String> roles = new ArrayList<>();
@@ -107,8 +116,9 @@ public class DocumentServiceImpl implements DocumentService {
     }
   }
 
-  public DocumentServiceImpl(final Feign feign, final String baseURI) {
-    documentServiceTarget = feign.newInstance(new Target.HardCodedTarget<>(DocumentServiceTarget.class, baseURI));
+  public DocumentServiceImpl(final Feign feign, final String baseURI, final ObjectMapper objectMapper) {
+    this.objectMapper = objectMapper;
+    this.documentServiceTarget = feign.newInstance(new Target.HardCodedTarget<>(DocumentServiceTarget.class, baseURI));
   }
 
   @Override
@@ -143,8 +153,7 @@ public class DocumentServiceImpl implements DocumentService {
       @Override
       public String getMediaType() {
         return response.headers().getOrDefault("content-type", Arrays.asList("application/octet-stream")) //
-            .stream().findFirst().orElse("application/octet-stream") //
-        ;
+            .stream().findFirst().orElse("application/octet-stream");
       }
 
       @Override
@@ -155,6 +164,12 @@ public class DocumentServiceImpl implements DocumentService {
       @Override
       public InputStream getContent() throws IOException {
         return response.body().asInputStream();
+      }
+
+      @Override
+      public Instant getVersionTimestamp() {
+        return response.headers().getOrDefault(VERSION_TIMESTAMP_HEADER, Arrays.asList("-")) //
+            .stream().findFirst().map(t -> t.length() > 1 ? Instant.parse(t) : null).orElse(null);
       }
     };
   }
@@ -198,22 +213,111 @@ public class DocumentServiceImpl implements DocumentService {
     };
   }
 
+  public ContentElementListBuilder addContent(final String documentId) {
+    return new ContentElementListBuilder() {
+      private final List<MultipartFile> parts = new ArrayList<MultipartFile>();
+
+      @Override
+      public ContentElementBuilder<ContentElementListBuilder> element() {
+        return new ContentElementBuilderImpl<ContentElementListBuilder>(this, parts::add);
+      }
+
+      @Override
+      public List<ContentElement> save() {
+        Document doc = documentServiceTarget.addContentElement(documentId, parts.toArray(new MultipartFile[parts.size()]));
+        
+        List<ContentElement> ces = doc.facet(ContentElementFacet.class).orElseThrow(() -> new IllegalStateException("Unexpected: no content element data"));
+        if(ces.size() < parts.size())
+          throw new IllegalStateException("Unexpected: content element list too short");
+        
+        ces.forEach(ce -> ce.setVersionTimestamp(doc.getVersionTimestamp()));
+        
+        return ces.subList(ces.size() - parts.size(), ces.size());
+      }
+    };
+  }
+  
   @Override
-  public ContentElement updateContentElement(final String documentId, final String contentElementId, final InputStream is,
-      final String mediaType) {
-    return documentServiceTarget.updateContentElement(is, documentId, contentElementId, mediaType);
+  public ContentElement addContentElement(final String documentId, final InputStream is, final String mediaType, final String role, final String filename) {
+    MultipartFile f = new MultipartFile() {
+      @Override
+      public void transferTo(final File dest) throws IOException, IllegalStateException {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public boolean isEmpty() {
+        return false;
+      }
+
+      @Override
+      public long getSize() {
+        return -1L;
+      }
+
+      @Override
+      public String getOriginalFilename() {
+        return null != filename && filename.length() > 0 ? filename : "unknown.dat";
+      }
+
+      @Override
+      public String getName() {
+        return role;
+      }
+
+      @Override
+      public InputStream getInputStream() throws IOException {
+        return is;
+      }
+
+      @Override
+      public String getContentType() {
+        return mediaType;
+      }
+    };
+    
+    Document doc = documentServiceTarget.addContentElement(documentId, new MultipartFile[] {f});
+    List<ContentElement> ces = doc.facet(ContentElementFacet.class).orElseThrow(() -> new IllegalStateException("Unexpected: no content element data"));
+    if(ces.isEmpty())
+      throw new IllegalStateException("Unexpected: empty content element list");
+    
+    // get the last content element
+    ContentElement ce = ces.get(ces.size()-1);
+    ce.setVersionTimestamp(doc.getVersionTimestamp());
+    
+    return ce;
   }
 
   @Override
-  public ContentElement updateContentElement(final String documentId, final String contentElementId, final Supplier<InputStream> iss,
-      final String mediaType) {
-    return documentServiceTarget.updateContentElement(iss.get(), documentId, contentElementId, mediaType);
+  public ContentElement updateContentElement(final String documentId, final String contentElementId,
+      final InputStream is, final String mediaType) {
+    return responseToContentElement(
+        documentServiceTarget.updateContentElement(is, documentId, contentElementId, mediaType));
+  }
+
+  private ContentElement responseToContentElement(final Response r) {
+    ContentElement ce;
+    try {
+      ce = objectMapper.readValue(r.body().asInputStream(), ContentElement.class);
+      ce.setVersionTimestamp(r.headers().getOrDefault(VERSION_TIMESTAMP_HEADER, Arrays.asList("-")) //
+          .stream().findFirst().map(t -> t.length() > 1 ? Instant.parse(t) : null).orElse(null));
+    } catch (IOException e) {
+      throw new FeignClientException(500, "Can't unmarshal response: " + e.getMessage());
+    }
+    return ce;
+  }
+
+  @Override
+  public ContentElement updateContentElement(final String documentId, final String contentElementId,
+      final Supplier<InputStream> iss, final String mediaType) {
+    return responseToContentElement(
+        documentServiceTarget.updateContentElement(iss.get(), documentId, contentElementId, mediaType));
   }
 
   @Override
   public ContentElement updateContentElement(final String documentId, final String contentElementId, final byte[] data,
       final String mediaType) {
-    return documentServiceTarget.updateContentElement(new ByteArrayInputStream(data), documentId, contentElementId,
-        mediaType);
+    return responseToContentElement(documentServiceTarget.updateContentElement(new ByteArrayInputStream(data),
+        documentId, contentElementId, mediaType));
   }
 }
