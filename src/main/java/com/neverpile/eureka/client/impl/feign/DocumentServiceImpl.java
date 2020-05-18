@@ -22,6 +22,7 @@ import com.neverpile.eureka.client.content.ContentElementBuilderImpl;
 import com.neverpile.eureka.client.content.ContentElementFacet;
 import com.neverpile.eureka.client.content.ContentElementListBuilder;
 import com.neverpile.eureka.client.content.MultipartFile;
+import com.neverpile.eureka.client.core.ClientException;
 import com.neverpile.eureka.client.core.ContentElement;
 import com.neverpile.eureka.client.core.ContentQueryBuilder;
 import com.neverpile.eureka.client.core.Digest;
@@ -29,6 +30,7 @@ import com.neverpile.eureka.client.core.Document;
 import com.neverpile.eureka.client.core.DocumentBuilder;
 import com.neverpile.eureka.client.core.DocumentService;
 import com.neverpile.eureka.client.core.HashAlgorithm;
+import com.neverpile.eureka.client.core.NotFoundException;
 
 import feign.Feign;
 import feign.Response;
@@ -96,7 +98,7 @@ public class DocumentServiceImpl implements DocumentService {
       Response multipartResponse = doQuery(queryMap, mediaTypes);
 
       if (multipartResponse.status() != 200)
-        throw new FeignServerException(multipartResponse.status(), multipartResponse.reason());
+        throw (RuntimeException) new FeignErrorDecoder().decode("getAll", multipartResponse);
 
       try {
         Collection<String> ctHeaderValues = multipartResponse.headers().get("Content-Type");
@@ -121,13 +123,21 @@ public class DocumentServiceImpl implements DocumentService {
   }
 
   @Override
-  public Document getDocument(final String documentId) {
-    return documentServiceTarget.getDocument(documentId);
+  public Optional<Document> getDocument(final String documentId) {
+    try {
+      return Optional.of(documentServiceTarget.getDocument(documentId));
+    } catch (NotFoundException e) {
+      return Optional.empty();
+    }
   }
 
   @Override
-  public Document getDocumentVersion(final String documentId, final Instant versionTimestamp) {
-    return documentServiceTarget.getDocumentVersion(documentId, versionTimestamp);
+  public Optional<Document> getDocumentVersion(final String documentId, final Instant versionTimestamp) {
+    try {
+      return Optional.of(documentServiceTarget.getDocumentVersion(documentId, versionTimestamp));
+    } catch (NotFoundException e) {
+      return Optional.empty();
+    }
   }
 
   @Override
@@ -146,6 +156,9 @@ public class DocumentServiceImpl implements DocumentService {
   }
 
   private ContentElementResponse contentElementResponse(final Response response) throws IOException {
+    if(response.status() != 200) 
+      throw (RuntimeException) new FeignErrorDecoder().decode("contentElementResponse", response);
+    
     Digest digest = createDigest(response);
 
     return new ContentElementResponse() {
@@ -286,7 +299,7 @@ public class DocumentServiceImpl implements DocumentService {
       ce.setVersionTimestamp(r.headers().getOrDefault(VERSION_TIMESTAMP_HEADER, Arrays.asList("-")) //
           .stream().findFirst().map(t -> t.length() > 1 ? Instant.parse(t) : null).orElse(null));
     } catch (IOException e) {
-      throw new FeignClientException(500, "Can't unmarshal response: " + e.getMessage());
+      throw new ClientException(500, "Can't unmarshal response: " + e.getMessage());
     }
     return ce;
   }

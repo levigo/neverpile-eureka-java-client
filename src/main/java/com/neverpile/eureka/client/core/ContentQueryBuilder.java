@@ -32,6 +32,7 @@ public interface ContentQueryBuilder {
    * Execute the query and return the first of any matching content element
    * 
    * @return the ContentElementResponse for the first match
+   * @throws NotFoundException if no matching element was found
    * @throws IOException
    */
   ContentElementResponse getFirst() throws IOException;
@@ -41,6 +42,7 @@ public interface ContentQueryBuilder {
    * one match was found.
    * 
    * @return the ContentElementResponse for the only match
+   * @throws NotFoundException if no matching element was found
    * @throws IOException
    */
   ContentElementResponse getOnly() throws IOException;
@@ -49,7 +51,7 @@ public interface ContentQueryBuilder {
    * Return all matching content elements as a {@link ContentElementSequence}. All content element
    * properties must be retrieved from the headers provided in the stream.
    * 
-   * @return
+   * @return a content element sequence
    * @throws IOException
    */
   ContentElementSequence getAll() throws IOException;

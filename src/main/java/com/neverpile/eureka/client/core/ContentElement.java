@@ -4,7 +4,7 @@ import java.time.Instant;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties("_links")
+@JsonIgnoreProperties(value = "_links", ignoreUnknown = true)
 public class ContentElement {
   private Instant versionTimestamp;
   private String role;

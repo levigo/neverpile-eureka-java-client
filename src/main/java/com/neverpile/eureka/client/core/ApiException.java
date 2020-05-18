@@ -1,6 +1,6 @@
 package com.neverpile.eureka.client.core;
 
-public abstract class ApiException extends RuntimeException {
+public class ApiException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 	private final int code;

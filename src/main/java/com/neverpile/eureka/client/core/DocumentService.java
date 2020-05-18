@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.neverpile.eureka.client.content.ContentElementListBuilder;
@@ -53,7 +54,7 @@ public interface DocumentService {
    * @param documentId the document's id
    * @return the current version or the empty optional if there is no such document
    */
-  Document getDocument(String documentId);
+  Optional<Document> getDocument(String documentId);
 
   /**
    * Get a particular version of the document with the given id.
@@ -62,7 +63,7 @@ public interface DocumentService {
    * @param versionTimestamp the version's timestamp
    * @return the current version or the empty optional if there is no such document
    */
-  Document getDocumentVersion(String documentId, Instant versionTimestamp);
+  Optional<Document> getDocumentVersion(String documentId, Instant versionTimestamp);
 
   /**
    * Get the version timestamps of all versions of the document with the given id.

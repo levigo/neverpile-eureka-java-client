@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 import org.hamcrest.CustomMatcher;
 import org.junit.Before;
@@ -73,11 +74,12 @@ public class EurekaFeignClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    Document document = client.documentService().getDocument("aDocument");
+    Optional<Document> document = client.documentService().getDocument("aDocument");
 
-    assertThat(document.getDocumentId()).isEqualTo("aDocument");
-    assertThat(document.facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
-    assertThat(document.facet(ModificationDateFacet.class)).isPresent().hasValue(
+    assertThat(document).isPresent();
+    assertThat(document.get().getDocumentId()).isEqualTo("aDocument");
+    assertThat(document.get().facet(CreationDateFacet.class)).isPresent().hasValue(Instant.parse("2019-12-09T14:25:53.747Z"));
+    assertThat(document.get().facet(ModificationDateFacet.class)).isPresent().hasValue(
         Instant.parse("2019-12-09T14:25:53.747Z"));
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
@@ -94,9 +96,10 @@ public class EurekaFeignClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    Document document = client.documentService().getDocument("aDocument");
+    Optional<Document> document = client.documentService().getDocument("aDocument");
 
-    Metadata metadata = document.facet(MetadataFacet.class).get();
+    assertThat(document).isPresent();
+    Metadata metadata = document.get().facet(MetadataFacet.class).get();
     assertThat(metadata).isNotNull();
     assertThat(metadata.elements()).containsKey("foo");
     assertThat(metadata.jsonElement("foo").get().asTree().path("foo").asText()).isEqualTo("bar2");
@@ -116,9 +119,10 @@ public class EurekaFeignClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    Document document = client.documentService().getDocument("aDocument");
+    Optional<Document> document = client.documentService().getDocument("aDocument");
 
-    List<ContentElement> ce = document.facet(ContentElementFacet.class).get();
+    assertThat(document).isPresent();
+    List<ContentElement> ce = document.get().facet(ContentElementFacet.class).get();
     assertThat(ce).isNotNull();
     assertThat(ce).hasSize(1);
 
@@ -471,9 +475,10 @@ public class EurekaFeignClientTest {
                     .withHeader("Content-Type", "application/json") //
                     .withBodyFile("exampleDocument.json")));
 
-    Document document = client.documentService().getDocumentVersion("aDocument", Instant.ofEpochMilli(42L));
+    Optional<Document> document = client.documentService().getDocumentVersion("aDocument", Instant.ofEpochMilli(42L));
 
-    assertThat(document.getDocumentId()).isEqualTo("aDocument");
+    assertThat(document).isPresent();
+    assertThat(document.get().getDocumentId()).isEqualTo("aDocument");
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/history/1970-01-01T00:00:00.042Z")));
   }
