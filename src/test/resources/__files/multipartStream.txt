@@ -5,6 +5,7 @@ Content-Type: text/plain
 Content-Length: 3
 ETag: "sha-256_LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564="
 Digest: sha-256=LCa0a2j/xo/5m0U8HTBBNBNCLXBkg7+g+YpeiGJm564=
+X-NPE-Document-Version-Timestamp: 1970-01-01T00:00:00.001Z
 
 foo
 --QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn
@@ -14,6 +15,7 @@ Content-Type: application/xml
 Content-Length: 17
 ETag: "sha-256_STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0="
 Digest: sha-256=STjYc7Z1UJKRK1T5cDMFIgYZKk6q5c6aTyNaEGfQSw0=
+X-NPE-Document-Version-Timestamp: 1970-01-01T00:00:00.002Z
 
 <foo>foobar</foo>
 --QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn
@@ -23,6 +25,7 @@ Content-Type: application/octet-stream
 Content-Length: 44
 ETag: "sha-256_7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69"
 Digest: sha-256=7d38b5cd25a2baf85ad3bb5b9311383e671a8a142eb302b324d4a5fba8748c69
+X-NPE-Document-Version-Timestamp: 1970-01-01T00:00:00.003Z
 
 The quick brown fox jumped over the lazy dog
 --QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn--

@@ -1,0 +1,17 @@
+{
+    "fileName": "aFileName.txt",
+    "role": "part",
+    "type": "text/plain",
+    "encryption": "SHARED",
+    "length": 36,
+    "digest": {
+        "algorithm": "SHA-256",
+        "bytes": "sWrtbVRuHGOC8ZCGUgSUN1Cv/sM8m40mgqRRW71154c="
+    },
+    "_links": {
+        "self": {
+            "href": "https://neverpile.sol-01.k8s.levigo.net/api/v1/documents/5c32e0a9-2325-48d1-a1f0-9e77f8f1ec2d/content/6709b8b1-f9f2-4d2b-8db1-da14c6d7dfc4"
+        }
+    },
+    "id": "anUpdatedId"
+}

@@ -1,10 +1,12 @@
 package com.neverpile.eureka.client.core;
 
+import java.time.Instant;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties("_links")
+@JsonIgnoreProperties(value = "_links", ignoreUnknown = true)
 public class ContentElement {
-
+  private Instant versionTimestamp;
   private String role;
   private String fileName;
   private String type;
@@ -16,15 +18,10 @@ public class ContentElement {
   public ContentElement() {
   }
 
-  public String getOriginalFilename() {
-    return fileName;
-  }
-
-  
   public String getType() {
     return type;
   }
-  
+
   public String getRole() {
     return role;
   }
@@ -36,7 +33,7 @@ public class ContentElement {
   public void setFileName(final String fileName) {
     this.fileName = fileName;
   }
-  
+
   public void setRole(final String role) {
     this.role = role;
   }
@@ -60,11 +57,11 @@ public class ContentElement {
   public void setLength(final long length) {
     this.length = length;
   }
- 
+
   public Digest getDigest() {
     return digest;
   }
-  
+
   public void setDigest(final Digest digest) {
     this.digest = digest;
   }
@@ -75,5 +72,18 @@ public class ContentElement {
 
   public void setEncryption(final EncryptionType encryption) {
     this.encryption = encryption;
+  }
+
+  /**
+   * Return the enclosing document's version timestamp. 
+   * 
+   * @return the version timestamp
+   */
+  public Instant getVersionTimestamp() {
+    return versionTimestamp;
+  }
+
+  public void setVersionTimestamp(final Instant versionTimestamp) {
+    this.versionTimestamp = versionTimestamp;
   }
 }

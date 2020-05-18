@@ -6,14 +6,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.neverpile.eureka.client.core.DocumentBuilder;
-import com.neverpile.eureka.client.impl.feign.DocumentBuilderImpl;
+public class ContentElementBuilderImpl<P> implements ContentElementBuilder<P> {
 
-public class ContentElementBuilderImpl implements ContentElementBuilder<DocumentBuilder> {
-
-  private final DocumentBuilderImpl documentBuilderImpl;
+  private final P documentBuilderImpl;
 
   private String name;
 
@@ -23,37 +21,33 @@ public class ContentElementBuilderImpl implements ContentElementBuilder<Document
 
   private Supplier<InputStream> streamSupplier;
 
-  private Supplier<Long> sizeSupplier = new Supplier<Long>() {
-    @Override
-    public Long get() {
-      return -1L;
-    }
-  };
+  private final Consumer<MultipartFile> fileConsumer;
 
-  public ContentElementBuilderImpl(final DocumentBuilderImpl documentBuilderImpl) {
+  public ContentElementBuilderImpl(final P documentBuilderImpl, final Consumer<MultipartFile> fileConsumer) {
     this.documentBuilderImpl = documentBuilderImpl;
+    this.fileConsumer = fileConsumer;
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> fileName(final String name) {
+  public ContentElementBuilder<P> fileName(final String name) {
     this.name = name;
     return this;
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> role(final String role) {
+  public ContentElementBuilder<P> role(final String role) {
     this.role = role;
     return this;
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> mediaType(final String mediaType) {
+  public ContentElementBuilder<P> mediaType(final String mediaType) {
     this.mediaType = mediaType;
     return this;
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> content(final InputStream stream) {
+  public ContentElementBuilder<P> content(final InputStream stream) {
     streamSupplier = new Supplier<InputStream>() {
       @Override
       public InputStream get() {
@@ -64,30 +58,24 @@ public class ContentElementBuilderImpl implements ContentElementBuilder<Document
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> content(final Supplier<InputStream> stream) {
+  public ContentElementBuilder<P> content(final Supplier<InputStream> stream) {
     this.streamSupplier = stream;
     return this;
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> content(final byte[] content) {
+  public ContentElementBuilder<P> content(final byte[] content) {
     streamSupplier = new Supplier<InputStream>() {
       @Override
       public InputStream get() {
         return new ByteArrayInputStream(content);
       }
     };
-    sizeSupplier = new Supplier<Long>() {
-      @Override
-      public Long get() {
-        return (long) content.length;
-      }
-    };
     return this;
   }
 
   @Override
-  public ContentElementBuilder<DocumentBuilder> content(final File content) {
+  public ContentElementBuilder<P> content(final File content) {
     streamSupplier = new Supplier<InputStream>() {
       @Override
       public InputStream get() {
@@ -98,33 +86,12 @@ public class ContentElementBuilderImpl implements ContentElementBuilder<Document
         }
       }
     };
-    sizeSupplier = new Supplier<Long>() {
-      @Override
-      public Long get() {
-        return content.length();
-      }
-    };
     return this;
   }
 
   @Override
-  public DocumentBuilder attach() {
-    documentBuilderImpl.add(new MultipartFile() {
-      @Override
-      public void transferTo(final File dest) throws IOException, IllegalStateException {
-        throw new UnsupportedOperationException();
-      }
-
-      @Override
-      public boolean isEmpty() {
-        return false;
-      }
-
-      @Override
-      public long getSize() {
-        return sizeSupplier.get();
-      }
-
+  public P attach() {
+    fileConsumer.accept(new MultipartFile() {
       @Override
       public String getOriginalFilename() {
         return null != name && name.length() > 0 ? name : "unknown.dat";

@@ -1,5 +1,6 @@
 package com.neverpile.eureka.client.impl.feign;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.client.core.DocumentService;
 import com.neverpile.eureka.client.core.NeverpileEurekaClient;
 
@@ -13,9 +14,11 @@ public class FeignNeverpileClient implements NeverpileEurekaClient {
 
   private final Feign feign;
   private final String baseURI;
+  private final ObjectMapper objectMapper;
 
-  FeignNeverpileClient(final Feign feign, final String baseURI) {
+  FeignNeverpileClient(final Feign feign, final ObjectMapper objectMapper, final String baseURI) {
     this.feign = feign;
+    this.objectMapper = objectMapper;
     this.baseURI = baseURI;
   }
 
@@ -26,6 +29,6 @@ public class FeignNeverpileClient implements NeverpileEurekaClient {
    */
   @Override
   public DocumentService documentService() {
-    return new DocumentServiceImpl(feign, baseURI);
+    return new DocumentServiceImpl(feign, baseURI, objectMapper);
   }
 }
