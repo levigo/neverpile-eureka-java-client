@@ -25,6 +25,8 @@ import com.neverpile.eureka.client.metadata.MetadataFacet;
 
 import feign.Client;
 import feign.Feign;
+import feign.Logger;
+import feign.Logger.Level;
 import feign.Request;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
@@ -204,6 +206,16 @@ public class EurekaClientBuilder {
     return this;
   }
 
+  public EurekaClientBuilder withLogger(final Logger logger) {
+    builder.logger(logger);
+    return this;
+  }
+
+  public EurekaClientBuilder withLogLevel(final Level level) {
+    builder.logLevel(level);
+    return this;
+  }
+  
   public NeverpileEurekaClient build() {
     return new FeignNeverpileClient(builder.build(), jackson(), baseURL);
   }
