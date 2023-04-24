@@ -144,6 +144,7 @@ public class EurekaClientBuilder {
   
   public EurekaClientBuilder() {
     builder = Feign.builder() //
+        .requestInterceptor(template -> template.uri(template.path().replaceAll("%3A", ":")))
         .errorDecoder(new FeignErrorDecoder()) //
         .decoder(createDecoder()) //
         .encoder(createEncoder());
