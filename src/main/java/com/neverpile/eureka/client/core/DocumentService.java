@@ -101,10 +101,9 @@ public interface DocumentService {
    * @return a ContentQueryBuilder
    */
   ContentQueryBuilder queryContent(String documentId, Instant versionTimestamp);
-  
+
   /**
-   * Add an content element to an existing document using the contents of the
-   * given input stream. 
+   * Add an content element to an existing document using the contents of the given input stream.
    * 
    * @param documentId the id of the document to update
    * @param is the input stream from which to update the content element
@@ -122,7 +121,7 @@ public interface DocumentService {
    * @return a builder used to attach the content elements to be added
    */
   ContentElementListBuilder addContent(String documentId);
-  
+
   /**
    * Update an existing content element by replacing its content stream with the contents of the
    * given input stream. Updating a content element may, depending on the configuration of the
@@ -166,4 +165,10 @@ public interface DocumentService {
    */
   ContentElement updateContentElement(String documentId, String contentElementId, byte[] data, String mediaType);
 
+  /**
+   * Delete a Document via its ID.
+   * 
+   * @param documentID the document ID
+   */
+  void deleteDocument(String documentID);
 }
