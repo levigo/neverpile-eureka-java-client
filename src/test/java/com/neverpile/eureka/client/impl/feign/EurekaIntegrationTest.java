@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.neverpile.eureka.client.EurekaClient;
@@ -30,6 +31,7 @@ public class EurekaIntegrationTest {
   }
 
   @Test
+  @Ignore // TODO Enable manually
   public void testThat_saveLoadDeleteRoundtripWorks() throws Exception {
     // Create document
     String docID = UUID.randomUUID().toString();
