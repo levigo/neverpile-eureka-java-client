@@ -13,29 +13,42 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
-    <opentracing-spring-jaeger-web-starter.version>2.0.3</opentracing-spring-jaeger-web-starter.version>
+    <opentracing-spring-jaeger-web-starter.version>3.3.1</opentracing-spring-jaeger-web-starter.version>
+    
+    <feign-jackson.version>12.3</feign-jackson.version>
+    <feign-form.version>3.8.0</feign-form.version>
+    <jackson-datatype-jsr310.version>2.15.0</jackson-datatype-jsr310.version>
+    <jackson-datatype-jdk8.version>2.15.0</jackson-datatype-jdk8.version>
+    <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
+    <junit.version>4.12</junit.version>
+    <assertj-core.version>3.13.2</assertj-core.version>
+    <wiremock-jre8.version>2.35.0</wiremock-jre8.version>
+    <slf4j-simple.version>2.0.7</slf4j-simple.version>
+    <jackson.version>2.15.0</jackson.version>
+    <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+    
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>io.github.openfeign</groupId>
       <artifactId>feign-jackson</artifactId>
-      <version>10.7.0</version>
+      <version>${feign-jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>io.github.openfeign.form</groupId>
       <artifactId>feign-form</artifactId>
-      <version>3.8.0</version>
+      <version>${feign-form.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.10.1</version>
+      <version>${jackson-datatype-jsr310.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jdk8</artifactId>
-      <version>2.10.1</version>
+      <version>${jackson-datatype-jdk8.version}</version>
     </dependency>
 
     <!-- JAXB is no longer bundled starting with JDK 9. -->
@@ -43,7 +56,7 @@
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
-      <version>2.4.0-b180830.0359</version>
+      <version>${jaxb-api.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -55,25 +68,25 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.13.2</version>
+      <version>${assertj-core.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-jre8</artifactId>
-      <version>2.25.1</version>
+      <version>${wiremock-jre8.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.25</version>
+      <version>${slf4j-simple.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -92,17 +105,17 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.10.1</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>2.10.1</version>
+        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>2.10.1</version>
+        <version>${jackson.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -112,7 +125,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>${maven-source-plugin.version}</version>
         <executions>
           <execution>
             <id>attach-sources</id>

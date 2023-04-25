@@ -156,9 +156,9 @@ public class DocumentServiceImpl implements DocumentService {
   }
 
   private ContentElementResponse contentElementResponse(final Response response) throws IOException {
-    if(response.status() != 200) 
+    if (response.status() != 200)
       throw (RuntimeException) new FeignErrorDecoder().decode("contentElementResponse", response);
-    
+
     Digest digest = createDigest(response);
 
     return new ContentElementResponse() {
@@ -236,21 +236,24 @@ public class DocumentServiceImpl implements DocumentService {
 
       @Override
       public List<ContentElement> save() {
-        Document doc = documentServiceTarget.addContentElement(documentId, parts.toArray(new MultipartFile[parts.size()]));
-        
-        List<ContentElement> ces = doc.facet(ContentElementFacet.class).orElseThrow(() -> new IllegalStateException("Unexpected: no content element data"));
-        if(ces.size() < parts.size())
+        Document doc = documentServiceTarget.addContentElement(documentId,
+            parts.toArray(new MultipartFile[parts.size()]));
+
+        List<ContentElement> ces = doc.facet(ContentElementFacet.class).orElseThrow(
+            () -> new IllegalStateException("Unexpected: no content element data"));
+        if (ces.size() < parts.size())
           throw new IllegalStateException("Unexpected: content element list too short");
-        
+
         ces.forEach(ce -> ce.setVersionTimestamp(doc.getVersionTimestamp()));
-        
+
         return ces.subList(ces.size() - parts.size(), ces.size());
       }
     };
   }
-  
+
   @Override
-  public ContentElement addContentElement(final String documentId, final InputStream is, final String mediaType, final String role, final String filename) {
+  public ContentElement addContentElement(final String documentId, final InputStream is, final String mediaType,
+      final String role, final String filename) {
     MultipartFile f = new MultipartFile() {
       @Override
       public String getOriginalFilename() {
@@ -272,16 +275,19 @@ public class DocumentServiceImpl implements DocumentService {
         return mediaType;
       }
     };
-    
-    Document doc = documentServiceTarget.addContentElement(documentId, new MultipartFile[] {f});
-    List<ContentElement> ces = doc.facet(ContentElementFacet.class).orElseThrow(() -> new IllegalStateException("Unexpected: no content element data"));
-    if(ces.isEmpty())
+
+    Document doc = documentServiceTarget.addContentElement(documentId, new MultipartFile[]{
+        f
+    });
+    List<ContentElement> ces = doc.facet(ContentElementFacet.class).orElseThrow(
+        () -> new IllegalStateException("Unexpected: no content element data"));
+    if (ces.isEmpty())
       throw new IllegalStateException("Unexpected: empty content element list");
-    
+
     // get the last content element
-    ContentElement ce = ces.get(ces.size()-1);
+    ContentElement ce = ces.get(ces.size() - 1);
     ce.setVersionTimestamp(doc.getVersionTimestamp());
-    
+
     return ce;
   }
 
@@ -316,5 +322,10 @@ public class DocumentServiceImpl implements DocumentService {
       final String mediaType) {
     return responseToContentElement(documentServiceTarget.updateContentElement(new ByteArrayInputStream(data),
         documentId, contentElementId, mediaType));
+  }
+
+  @Override
+  public void deleteDocument(String documentID) {
+    documentServiceTarget.deleteDocument(documentID);
   }
 }
