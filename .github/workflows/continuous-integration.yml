@@ -5,9 +5,9 @@ on:
     branches-ignore:
       - master
     paths-ignore:
-      - '.github/**'
       - '**/README.md'
-      
+      ## - '.github/**'
+
 jobs:
   build:
 
