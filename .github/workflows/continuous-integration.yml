@@ -40,10 +40,8 @@ jobs:
       with:
         username: GitHub
         icon_emoji: octocat
-        status: ${{ job.status }}
         fields: repo,message,commit,author,action,eventName,ref
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       if: ${{ github.actor != 'dependabot[bot]' }}
 
