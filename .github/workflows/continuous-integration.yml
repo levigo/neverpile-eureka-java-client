@@ -41,6 +41,7 @@ jobs:
       with:
         username: GitHub
         icon_emoji: octocat
+        status: ${{ job.status }}
         fields: repo,message,commit,author,action,eventName,ref
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
