@@ -14,4 +14,5 @@ jobs:
     with:
       mattermostChannel: 'neverpile-ci'
       matrix: '{"jdk": [11]}'
+      sonarAnalysisEnabled: false
 
