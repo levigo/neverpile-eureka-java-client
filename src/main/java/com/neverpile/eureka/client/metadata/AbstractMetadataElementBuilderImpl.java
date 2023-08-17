@@ -1,7 +1,7 @@
 package com.neverpile.eureka.client.metadata;
 
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class AbstractMetadataElementBuilderImpl<P, I> {
 
@@ -20,11 +20,7 @@ public class AbstractMetadataElementBuilderImpl<P, I> {
 
   @SuppressWarnings("unchecked")
   public I content(final String s) {
-    try {
-      element.setContent(s.getBytes("utf-8"));
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException(e);
-    }
+    element.setContent(s.getBytes(StandardCharsets.UTF_8));
     return (I) this;
   }
 

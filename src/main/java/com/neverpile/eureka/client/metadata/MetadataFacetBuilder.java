@@ -10,6 +10,6 @@ public interface MetadataFacetBuilder<P> extends DocumentFacetBuilderInternal<P>
   XmlMetadataElementBuilder<P> xmlMetadata(String schema);
 
   static <P> MetadataFacetBuilder<P> metadata() {
-    return new MetadataFacetBuilderImpl<P>();
+    return new MetadataFacetBuilderImpl<>();
   }
 }

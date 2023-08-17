@@ -16,6 +16,7 @@ public class ContentElement {
   private EncryptionType encryption;
 
   public ContentElement() {
+    // POJO
   }
 
   public String getType() {

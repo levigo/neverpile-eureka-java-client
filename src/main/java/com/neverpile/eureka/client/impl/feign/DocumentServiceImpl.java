@@ -227,11 +227,11 @@ public class DocumentServiceImpl implements DocumentService {
 
   public ContentElementListBuilder addContent(final String documentId) {
     return new ContentElementListBuilder() {
-      private final List<MultipartFile> parts = new ArrayList<MultipartFile>();
+      private final List<MultipartFile> parts = new ArrayList<>();
 
       @Override
       public ContentElementBuilder<ContentElementListBuilder> element() {
-        return new ContentElementBuilderImpl<ContentElementListBuilder>(this, parts::add);
+        return new ContentElementBuilderImpl<>(this, parts::add);
       }
 
       @Override

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +28,6 @@ import feign.Client;
 import feign.Feign;
 import feign.Logger;
 import feign.Logger.Level;
-import feign.Request;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import feign.codec.EncodeException;
@@ -61,10 +61,12 @@ public class EurekaClientBuilder {
             });
           }
 
+          @Override
           public void write(final byte[] b) throws IOException {
             output.write(b);
           }
 
+          @Override
           public void write(final byte[] b, final int off, final int len) throws IOException {
             output.write(b, off, len);
           }
@@ -123,7 +125,7 @@ public class EurekaClientBuilder {
         InputStream is = (InputStream) object;
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         
-        byte buffer[] = new byte[8192];
+        byte[] buffer = new byte[8192];
         int r;
         try {
           while((r = is.read(buffer)) > 0)
@@ -132,7 +134,7 @@ public class EurekaClientBuilder {
           throw new EncodeException("Can't encode InputSuream", e);
         }
         
-        template.body(Request.Body.encoded(output.toByteArray(), StandardCharsets.UTF_8));
+        template.body(output.toByteArray(), StandardCharsets.UTF_8);
       } else
         delegate.encode(object, bodyType, template);
     }
@@ -144,7 +146,10 @@ public class EurekaClientBuilder {
   
   public EurekaClientBuilder() {
     builder = Feign.builder() //
-        .requestInterceptor(template -> template.uri(template.path().replaceAll("%3A", ":")))
+        // template.path() does not return the URI's path but the "fully qualified url with all query parameters"!
+        // but template.uri(String) only accepts relative URIs, i.e. what would generally be considered a 'path'
+        // so apparently in feign terminology path=URI and URI=path
+        .requestInterceptor(template -> template.uri(URI.create(template.path()).getPath().replace("%3A", ":")))
         .errorDecoder(new FeignErrorDecoder()) //
         .decoder(createDecoder()) //
         .encoder(createEncoder());

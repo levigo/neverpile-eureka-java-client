@@ -27,7 +27,7 @@ import com.neverpile.eureka.client.core.HashAlgorithm;
  */
 public class ContentElementSequence {
   private InputStream in = null;
-  private byte boundary[] = null;
+  private byte[] boundary = null;
 
   private final class PartialStreamContentElementResponse implements ContentElementResponse {
     private final class PartialStreamInputStream extends InputStream {
@@ -39,17 +39,17 @@ public class ContentElementSequence {
         closed = true;
       }
 
+      @Override
       public int available() throws IOException {
         verifyState();
-
         return in.available();
       }
 
       private void verifyState() throws IOException {
         PartialStreamContentElementResponse.this.verifyState();
-
-        if (closed)
+        if (closed) {
           throw new IOException("Stream is closed");
+        }
       }
 
       /**
@@ -110,9 +110,10 @@ public class ContentElementSequence {
        * Read n bytes of data from the current part.
        * 
        * @return the number of bytes data, read or <strong>-1</strong> if end of file.
-       * @exception IOException If some IO error occured.
+       * @exception IOException If some IO error occurred.
        */
-      public int read(final byte b[], final int off, final int len) throws IOException {
+      @Override
+      public int read(final byte[] b, final int off, final int len) throws IOException {
         verifyState();
 
         int got = 0;
@@ -125,6 +126,7 @@ public class ContentElementSequence {
         return got;
       }
 
+      @Override
       public long skip(long n) throws IOException {
         verifyState();
 
@@ -181,7 +183,7 @@ public class ContentElementSequence {
 
   private State state = State.IDLE;
 
-  private final Map<String, String> currentHeaders = new HashMap<String, String>();
+  private final Map<String, String> currentHeaders = new HashMap<>();
 
   private int currentStreamIndex = -1;
 
@@ -313,10 +315,9 @@ public class ContentElementSequence {
    * Switch to the next available part of data. One can interrupt the current part, and use this
    * method to switch to next part before current part was totally read.
    * 
-   * @return A boolean <strong>true</strong> if there next partis ready, or <strong>false</strong>
+   * @return A boolean <strong>true</strong> if the next part is ready, or <strong>false</strong>
    *         if this was the last part.
    */
-
   private boolean advanceToNextStream() throws IOException {
     switch (state){
       case IDLE :
@@ -340,7 +341,7 @@ public class ContentElementSequence {
    * @param boundary The input stream MIME boundary.
    */
 
-  public ContentElementSequence(final InputStream in, final byte boundary[]) {
+  public ContentElementSequence(final InputStream in, final byte[] boundary) {
     this.in = (in.markSupported() ? in : new BufferedInputStream(in, boundary.length + 5));
     this.boundary = boundary;
   }
