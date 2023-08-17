@@ -24,17 +24,17 @@ public class MetadataFacetBuilderImpl<P> implements MetadataFacetBuilder<P>, Doc
 
   @Override
   public GenericMetadataElementBuilder<P> genericMetadata(final String schema) {
-    return new GenericMetadataElementBuilderImpl<P>(parent, schema, metadata);
+    return new GenericMetadataElementBuilderImpl<>(parent, schema, metadata);
   }
 
   @Override
   public JsonMetadataElementBuilder<P> jsonMetadata(final String schema) {
-    return new JsonMetadataElementBuilderImpl<P>(parent, schema, metadata);
+    return new JsonMetadataElementBuilderImpl<>(parent, schema, metadata);
   }
 
   @Override
   public XmlMetadataElementBuilder<P> xmlMetadata(final String schema) {
-    return new XmlMetadataElementBuilderImpl<P>(parent, schema, metadata);
+    return new XmlMetadataElementBuilderImpl<>(parent, schema, metadata);
   }
 
 }

@@ -48,12 +48,7 @@ public class ContentElementBuilderImpl<P> implements ContentElementBuilder<P> {
 
   @Override
   public ContentElementBuilder<P> content(final InputStream stream) {
-    streamSupplier = new Supplier<InputStream>() {
-      @Override
-      public InputStream get() {
-        return stream;
-      }
-    };
+    streamSupplier = () -> stream;
     return this;
   }
 
@@ -65,25 +60,17 @@ public class ContentElementBuilderImpl<P> implements ContentElementBuilder<P> {
 
   @Override
   public ContentElementBuilder<P> content(final byte[] content) {
-    streamSupplier = new Supplier<InputStream>() {
-      @Override
-      public InputStream get() {
-        return new ByteArrayInputStream(content);
-      }
-    };
+    streamSupplier = () -> new ByteArrayInputStream(content);
     return this;
   }
 
   @Override
   public ContentElementBuilder<P> content(final File content) {
-    streamSupplier = new Supplier<InputStream>() {
-      @Override
-      public InputStream get() {
-        try {
-          return new FileInputStream(content);
-        } catch (FileNotFoundException e) {
-          throw new RuntimeException(e);
-        }
+    streamSupplier = () -> {
+      try {
+        return new FileInputStream(content);
+      } catch (FileNotFoundException e) {
+        throw new RuntimeException(e);
       }
     };
     return this;

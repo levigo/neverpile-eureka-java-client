@@ -17,7 +17,7 @@ public class DocumentBuilderImpl implements DocumentBuilder {
   
   private final DocumentServiceTarget documentServiceTarget;
   
-  private final List<MultipartFile> parts = new ArrayList<MultipartFile>();
+  private final List<MultipartFile> parts = new ArrayList<>();
 
   public DocumentBuilderImpl(final DocumentServiceTarget documentServiceTarget) {
     this.documentServiceTarget = documentServiceTarget;
@@ -37,7 +37,7 @@ public class DocumentBuilderImpl implements DocumentBuilder {
 
   @Override
   public ContentElementBuilder<DocumentBuilder> contentElement() {
-    return new ContentElementBuilderImpl<DocumentBuilder>(this, parts::add);
+    return new ContentElementBuilderImpl<>(this, parts::add);
   }
 
   @Override

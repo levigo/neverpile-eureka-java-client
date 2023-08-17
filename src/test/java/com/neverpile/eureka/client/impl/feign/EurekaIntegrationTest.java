@@ -20,6 +20,8 @@ import com.neverpile.eureka.client.core.DocumentService.ContentElementResponse;
 import com.neverpile.eureka.client.core.NeverpileEurekaClient;
 import com.neverpile.eureka.client.core.NotFoundException;
 
+import feign.RetryableException;
+
 public class EurekaIntegrationTest {
 
   private NeverpileEurekaClient client;
@@ -70,6 +72,16 @@ public class EurekaIntegrationTest {
     } catch (NotFoundException e) {
       // expected
     }
+  }
+
+  @Test(expected = RetryableException.class)
+  public void test_url_not_absolute(){
+    final NeverpileEurekaClient clientWithIncorrectURL = EurekaClient.builder().baseURL("http://somehost:1234").withBasicAuth().username("admin").password(
+        "admin").done().build();
+    final String docID = UUID.randomUUID().toString();
+    final String text = "Hello, world!";
+    ContentElement ce = clientWithIncorrectURL.documentService().addContentElement(docID, new ByteArrayInputStream(text.getBytes()),
+        "text/plain", "role", "filename");
   }
 
   private DocumentBuilder buildEurekaDocument(String docId) {

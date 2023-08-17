@@ -48,8 +48,6 @@ public class Digest {
     Digest other = (Digest) obj;
     if (algorithm != other.algorithm)
       return false;
-    if (!Arrays.equals(bytes, other.bytes))
-      return false;
-    return true;
+    return Arrays.equals(bytes, other.bytes);
   }
 }

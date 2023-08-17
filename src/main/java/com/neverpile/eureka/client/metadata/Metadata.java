@@ -55,8 +55,6 @@ public class Metadata {
     if (getClass() != obj.getClass())
       return false;
     Metadata other = (Metadata) obj;
-    if (!elements.equals(other.elements))
-      return false;
-    return true;
+    return elements.equals(other.elements);
   }
 }
