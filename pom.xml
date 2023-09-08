@@ -22,7 +22,7 @@
     <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
     <junit.version>4.13.2</junit.version>
     <assertj-core.version>3.24.2</assertj-core.version>
-    <wiremock-jre8.version>2.35.0</wiremock-jre8.version>
+    <wiremock-jre8.version>2.35.1</wiremock-jre8.version>
     <slf4j-simple.version>2.0.7</slf4j-simple.version>
     <jackson.version>2.15.2</jackson.version>
     <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
