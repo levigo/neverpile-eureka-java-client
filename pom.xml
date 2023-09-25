@@ -9,24 +9,20 @@
   <properties>
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.target>${java.version}</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
-    <opentracing-spring-jaeger-web-starter.version>3.3.1</opentracing-spring-jaeger-web-starter.version>
-    
-    <feign-jackson.version>12.4</feign-jackson.version>
+    <feign-jackson.version>12.5</feign-jackson.version>
     <feign-form.version>3.8.0</feign-form.version>
     <jackson-datatype-jsr310.version>2.15.2</jackson-datatype-jsr310.version>
     <jackson-datatype-jdk8.version>2.15.2</jackson-datatype-jdk8.version>
     <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
     <junit.version>4.13.2</junit.version>
     <assertj-core.version>3.24.2</assertj-core.version>
-    <wiremock-jre8.version>2.35.0</wiremock-jre8.version>
-    <slf4j-simple.version>2.0.7</slf4j-simple.version>
+    <wiremock-jre8.version>3.0.1</wiremock-jre8.version>
+    <slf4j-simple.version>2.0.9</slf4j-simple.version>
     <jackson.version>2.15.2</jackson.version>
     <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-    
   </properties>
 
   <dependencies>
@@ -60,11 +56,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- <dependency> -->
-    <!-- <groupId>org.springframework.cloud</groupId> -->
-    <!-- <artifactId>spring-cloud-security</artifactId> -->
-    <!-- </dependency> -->
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -92,15 +83,6 @@
   </dependencies>
 
   <dependencyManagement>
-    <!-- <dependencies> -->
-    <!-- <dependency> -->
-    <!-- <groupId>org.springframework.cloud</groupId> -->
-    <!-- <artifactId>spring-cloud-dependencies</artifactId> -->
-    <!-- <version>${spring-cloud.version}</version> -->
-    <!-- <type>pom</type> -->
-    <!-- <scope>import</scope> -->
-    <!-- </dependency> -->
-    <!-- </dependencies> -->
     <dependencies>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
