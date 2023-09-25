@@ -1,6 +1,6 @@
 [![Actions Status](https://github.com/levigo/neverpile-eureka-java-client/workflows/Continuous%20Delivery/badge.svg)](https://github.com/levigo/neverpile-eureka-java-client/actions)
 [![Made with JAVA](https://img.shields.io/badge/MADE%20with-JAVA-RED.svg)](#JAVA)
-[![Generic badge](https://img.shields.io/badge/current%20version-0.1.13-1abc9c.svg)](https://github.com/levigo/neverpile-eureka-java-client/tree/v0.1.13)
+[![Generic badge](https://img.shields.io/badge/current%20version-0.1.14-1abc9c.svg)](https://github.com/levigo/neverpile-eureka-java-client/tree/v0.1.14)
 
 # neverpile-eureka-java-client
 A Feign-based Java-client for neverpile eureka - The archive system for the cloud generation.
@@ -10,5 +10,5 @@ A Feign-based Java-client for neverpile eureka - The archive system for the clou
     <dependency>
       <groupId>com.neverpile.eureka.client</groupId>
       <artifactId>neverpile-eureka-java-client</artifactId>
-      <version>0.1.13</version>
+      <version>0.1.14</version>
     </dependency>
