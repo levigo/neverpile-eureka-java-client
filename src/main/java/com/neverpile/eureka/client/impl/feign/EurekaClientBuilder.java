@@ -229,4 +229,8 @@ public class EurekaClientBuilder {
   public BasicAuthBuilder withBasicAuth() {
     return new BasicAuthBuilder(this);
   }
+
+  public BearerTokenBuilder withBearerToken() {
+    return new BearerTokenBuilder(this);
+  }
 }
