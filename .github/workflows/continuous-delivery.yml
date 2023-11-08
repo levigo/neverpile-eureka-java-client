@@ -14,7 +14,7 @@ jobs:
     secrets: inherit
     with:
       mattermostChannel: 'neverpile-ci'
-      jdkVersion: '11'
+      jdkVersion: '17'
 
   # Update README.md
   updateReadme:
