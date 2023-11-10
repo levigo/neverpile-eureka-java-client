@@ -7,7 +7,7 @@
   <name>neverpile-eureka-java-client</name>
 
   <properties>
-    <java.version>1.8</java.version>
+    <java.version>17</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -16,12 +16,11 @@
     <feign-form.version>3.8.0</feign-form.version>
     <jackson-datatype-jsr310.version>2.15.2</jackson-datatype-jsr310.version>
     <jackson-datatype-jdk8.version>2.15.2</jackson-datatype-jdk8.version>
-    <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
     <junit.version>4.13.2</junit.version>
     <assertj-core.version>3.24.2</assertj-core.version>
     <wiremock-jre8.version>3.0.1</wiremock-jre8.version>
     <slf4j-simple.version>2.0.9</slf4j-simple.version>
-    <jackson.version>2.15.2</jackson.version>
+    <jackson.version>2.15.3</jackson.version>
     <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
   </properties>
 
@@ -46,16 +45,6 @@
       <artifactId>jackson-datatype-jdk8</artifactId>
       <version>${jackson-datatype-jdk8.version}</version>
     </dependency>
-
-    <!-- JAXB is no longer bundled starting with JDK 9. -->
-    <!-- The user is supposed to provide this dependency, if running on a JDK without JAXB support -->
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>${jaxb-api.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -79,6 +68,16 @@
       <artifactId>slf4j-simple</artifactId>
       <version>${slf4j-simple.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.activation</groupId>
+      <artifactId>jakarta.activation-api</artifactId>
+      <version>2.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+      <version>4.0.1</version>
     </dependency>
   </dependencies>
 

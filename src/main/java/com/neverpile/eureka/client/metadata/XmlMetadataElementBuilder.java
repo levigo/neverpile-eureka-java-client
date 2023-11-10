@@ -1,8 +1,9 @@
 package com.neverpile.eureka.client.metadata;
 
-import javax.xml.bind.JAXBElement;
 
 import org.w3c.dom.Element;
+
+import jakarta.xml.bind.JAXBElement;
 
 public interface XmlMetadataElementBuilder<P> {
 

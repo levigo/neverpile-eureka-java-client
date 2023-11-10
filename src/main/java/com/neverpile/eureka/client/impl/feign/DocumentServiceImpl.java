@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.client.content.ContentElementBuilder;
 import com.neverpile.eureka.client.content.ContentElementBuilderImpl;
@@ -35,6 +32,8 @@ import com.neverpile.eureka.client.core.NotFoundException;
 import feign.Feign;
 import feign.Response;
 import feign.Target;
+import jakarta.activation.MimeType;
+import jakarta.activation.MimeTypeParseException;
 
 public class DocumentServiceImpl implements DocumentService {
   static final String VERSION_TIMESTAMP_HEADER = "X-NPE-Document-Version-Timestamp";
@@ -82,7 +81,7 @@ public class DocumentServiceImpl implements DocumentService {
       queryMap.put("return", "only");
 
       if (mediaTypes.isEmpty())
-        mediaTypes.add("*/*");
+        mediaTypes.add("application/json");
 
       return contentElementResponse(doQuery(queryMap, mediaTypes));
     }
