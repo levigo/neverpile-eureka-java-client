@@ -14,7 +14,7 @@
     <!-- dependency versions -->
     <feign-form.version>3.8.0</feign-form.version>
     <feign-jackson.version>12.5</feign-jackson.version>
-    <jackson.version>2.15.3</jackson.version>
+    <jackson.version>2.15.4</jackson.version>
     <slf4j-simple.version>2.0.12</slf4j-simple.version>
     <!-- test dependencies and maven plugins -->
     <assertj-core.version>3.25.3</assertj-core.version>
