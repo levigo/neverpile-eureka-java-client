@@ -18,8 +18,8 @@
     <slf4j-simple.version>2.0.12</slf4j-simple.version>
     <!-- test dependencies and maven plugins -->
     <assertj-core.version>3.25.3</assertj-core.version>
-    <junit.version>4.13.2</junit.version>
-    <wiremock-jre8.version>3.0.1</wiremock-jre8.version>
+    <junit.version>5.10.2</junit.version>
+    <wiremock.version>3.5.2</wiremock.version>
     <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
   </properties>
 
@@ -45,9 +45,8 @@
       <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -57,9 +56,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock-jre8</artifactId>
-      <version>${wiremock-jre8.version}</version>
+      <groupId>org.wiremock</groupId>
+      <artifactId>wiremock</artifactId>
+      <version>${wiremock.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -97,11 +96,23 @@
         <artifactId>jackson-annotations</artifactId>
         <version>${jackson.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -114,6 +125,11 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.2.5</version>
       </plugin>
     </plugins>
   </build>

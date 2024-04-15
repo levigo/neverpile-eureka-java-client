@@ -1,5 +1,9 @@
 package com.neverpile.eureka.client.impl.feign;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aMultipart;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -16,8 +20,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -28,14 +30,12 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import org.hamcrest.CustomMatcher;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import com.neverpile.eureka.client.EurekaClient;
 import com.neverpile.eureka.client.content.ContentElementFacet;
 import com.neverpile.eureka.client.core.ContentElement;
@@ -49,22 +49,18 @@ import com.neverpile.eureka.client.metadata.Metadata;
 import com.neverpile.eureka.client.metadata.MetadataFacet;
 import com.neverpile.eureka.client.metadata.MetadataFacetBuilder;
 
-public class EurekaFeignClientTest {
-  @Rule
-  public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().dynamicPort());
+@WireMockTest
+class EurekaFeignClientTest {
 
-  @Rule
-  public ExpectedException expected = ExpectedException.none();
+  private static NeverpileEurekaClient client;
 
-  private NeverpileEurekaClient client;
-
-  @Before
-  public void createClient() {
-    client = EurekaClient.builder().baseURL("http://localhost:" + wireMockRule.port()).build();
+  @BeforeAll
+  public static void createClient(WireMockRuntimeInfo wmRuntimeInfo) {
+    client = EurekaClient.builder().baseURL("http://localhost:" + wmRuntimeInfo.getHttpPort()).build();
   }
 
   @Test
-  public void testThat_documentCanBeRetrieved() throws Exception {
+  void testThat_documentCanBeRetrieved() throws Exception {
     stubFor( //
         get(urlEqualTo("/api/v1/documents/aDocument")) //
             .withHeader("Accept", equalTo("application/json")) //
@@ -86,7 +82,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_metadataFacetIsSupported() throws Exception {
+  void testThat_metadataFacetIsSupported() throws Exception {
     stubFor( //
         get(urlEqualTo("/api/v1/documents/aDocument")) //
             .withHeader("Accept", equalTo("application/json")) //
@@ -109,7 +105,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_contentElementFacetIsSupported() throws Exception {
+  void testThat_contentElementFacetIsSupported() throws Exception {
     stubFor( //
         get(urlEqualTo("/api/v1/documents/aDocument")) //
             .withHeader("Accept", equalTo("application/json")) //
@@ -123,14 +119,13 @@ public class EurekaFeignClientTest {
 
     assertThat(document).isPresent();
     List<ContentElement> ce = document.get().facet(ContentElementFacet.class).get();
-    assertThat(ce).isNotNull();
-    assertThat(ce).hasSize(1);
+    assertThat(ce).isNotNull().hasSize(1);
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument")));
   }
 
   @Test
-  public void testThat_documentCreationFromMultipartWorks() throws Exception {
+  void testThat_documentCreationFromMultipartWorks() throws Exception {
     // We match the request parts in two identical calls due to limitations of WireMock's
     // .withMultipartRequestBody(aMultipart()...
     stubFor( //
@@ -193,7 +188,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_documentCreationWithMetadataWorks() throws Exception {
+  void testThat_documentCreationWithMetadataWorks() throws Exception {
     // We match the request parts in two identical calls due to limitations of WireMock's
     // .withMultipartRequestBody(aMultipart()...
     stubFor( //
@@ -242,7 +237,7 @@ public class EurekaFeignClientTest {
   }
   
   @Test
-  public void testThat_contentElementCanBeAdded() throws Exception {
+  void testThat_contentElementCanBeAdded() throws Exception {
     // We match the request parts in two identical calls due to limitations of WireMock's
     // .withMultipartRequestBody(aMultipart()...
     stubFor( //
@@ -269,7 +264,7 @@ public class EurekaFeignClientTest {
   }
   
   @Test
-  public void testThat_contentElementCanBeAddedWithBuilder() throws Exception {
+  void testThat_contentElementCanBeAddedWithBuilder() throws Exception {
     // We match the request parts in two identical calls due to limitations of WireMock's
     // .withMultipartRequestBody(aMultipart()...
     stubFor( //
@@ -306,7 +301,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_contentQueriesForFirstWork() throws Exception {
+  void testThat_contentQueriesForFirstWork() throws Exception {
     stubFor( //
         get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
             .withHeader("Accept", containing("text/plain")) //
@@ -339,7 +334,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_contentQueriesForOnlyWork() throws Exception {
+  void testThat_contentQueriesForOnlyWork() throws Exception {
     stubFor( //
         get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
             .withHeader("Accept", containing("text/plain")) //
@@ -370,7 +365,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_contentQueriesForAllWork() throws Exception {
+  void testThat_contentQueriesForAllWork() throws Exception {
     stubFor( //
         get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
             .willReturn( //
@@ -416,7 +411,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_contentQueriesAgainstHistoryWork() throws Exception {
+  void testThat_contentQueriesAgainstHistoryWork() throws Exception {
     stubFor( //
         get(urlMatching("/api/v1/documents/aDocument/history/1970-01-01T00:00:00.042Z/content\\?.*")) //
             .willReturn( //
@@ -447,25 +442,20 @@ public class EurekaFeignClientTest {
   }
 
   @Test()
-  public void testThat_contentElementSequenceConsumptionworks() throws Exception {
-    expected.expect(new CustomMatcher<Object>("Exception message containing 'Already advanced'") {
-      @Override
-      public boolean matches(final Object item) {
-        return item instanceof IllegalStateException && ((IllegalStateException) item).getMessage().contains("Already advanced");
-      }
-    });
+  void testThat_contentElementSequenceConsumptionworks() throws Exception {
     ContentElementSequence s = new ContentElementSequence(
         getClass().getResourceAsStream("/__files/multipartStream.txt"), "QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn".getBytes());
 
     InputStream stream1 = s.nextContentElement().getContent();
 
     s.nextContentElement().getContent();
-
-    stream1.read(); // can no longer consume this
+    IllegalStateException e = assertThrows(IllegalStateException.class, () -> stream1.read(),
+        "should no longer be able to consume this");
+    assertTrue(e.getMessage().contains("Already advanced"));
   }
 
   @Test
-  public void testThat_oldVersionCanBeRetrieved() throws Exception {
+  void testThat_oldVersionCanBeRetrieved() throws Exception {
     stubFor( //
         get(urlEqualTo("/api/v1/documents/aDocument/history/1970-01-01T00:00:00.042Z")) //
             .withHeader("Accept", equalTo("application/json")) //
@@ -484,7 +474,7 @@ public class EurekaFeignClientTest {
   }
 
   @Test
-  public void testThat_versionListCanBeRetrieved() throws Exception {
+  void testThat_versionListCanBeRetrieved() throws Exception {
     stubFor( //
         get(urlEqualTo("/api/v1/documents/aDocument/history")) //
             .withHeader("Accept", equalTo("application/json")) //
@@ -497,14 +487,14 @@ public class EurekaFeignClientTest {
 
     List<Instant> versions = client.documentService().getVersions("aDocument");
 
-    assertThat(versions).hasSize(3);
-    assertThat(versions).containsExactly(Instant.ofEpochMilli(1l), Instant.ofEpochMilli(2l), Instant.ofEpochMilli(3l));
+    assertThat(versions).hasSize(3).containsExactly(Instant.ofEpochMilli(1l), Instant.ofEpochMilli(2l),
+        Instant.ofEpochMilli(3l));
 
     verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/history")));
   }
 
   @Test
-  public void testThat_contentElementCanBeUpdated() throws Exception {
+  void testThat_contentElementCanBeUpdated() throws Exception {
     stubFor( //
         put(urlEqualTo("/api/v1/documents/aDocument/content/someContentElementId")) //
             .withHeader("Accept", equalTo("application/json")) //
