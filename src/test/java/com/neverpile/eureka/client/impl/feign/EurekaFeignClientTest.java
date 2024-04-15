@@ -30,7 +30,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -52,10 +52,10 @@ import com.neverpile.eureka.client.metadata.MetadataFacetBuilder;
 @WireMockTest
 class EurekaFeignClientTest {
 
-  private NeverpileEurekaClient client;
+  private static NeverpileEurekaClient client;
 
-  @BeforeEach
-  public void createClient(WireMockRuntimeInfo wmRuntimeInfo) {
+  @BeforeAll
+  public static void createClient(WireMockRuntimeInfo wmRuntimeInfo) {
     client = EurekaClient.builder().baseURL("http://localhost:" + wmRuntimeInfo.getHttpPort()).build();
   }
 
