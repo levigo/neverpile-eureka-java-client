@@ -10,7 +10,7 @@ on:
 jobs:
   # checkout, build, deploy, notify mattermost
   build:
-    uses: levigo/reusable-workflows-pub/.github/workflows/continuous-delivery-np.yml@v1
+    uses: levigo/reusable-workflows-pub/.github/workflows/continuous-delivery-np.yml@latest
     secrets: inherit
     with:
       mattermostChannel: 'neverpile-ci'
@@ -19,7 +19,7 @@ jobs:
   # Update README.md
   updateReadme:
     needs: build
-    uses: levigo/reusable-workflows-pub/.github/workflows/update-readme-md.yml@v1
+    uses: levigo/reusable-workflows-pub/.github/workflows/update-readme-md.yml@latest
     secrets: inherit
     with:
       releaseVersion: ${{ needs.build.outputs.releaseVersion }}
