@@ -1,6 +1,7 @@
 package com.neverpile.eureka.client.impl.feign;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -520,5 +521,26 @@ class EurekaFeignClientTest {
     assertThat(updated.getVersionTimestamp()).isEqualTo(Instant.ofEpochMilli(3));
 
     verify(putRequestedFor(urlMatching("/api/v1/documents/aDocument/content/someContentElementId")));
+  }
+
+  @Test
+  void testThat_AcceptHeadersDoNotGetHtmlEncoded() throws Exception {
+    stubFor( //
+        get(urlMatching("/api/v1/documents/aDocument/content\\?.*")) //
+            .withHeader("Accept", equalTo("*/*")) //
+            .willReturn( //
+                aResponse() //
+                    .withStatus(200) //
+                    .withHeader("Content-Type",
+                        "multipart/mixed; boundary=QekfwgcG0Tam6ly0hQqL2JF6srHvBxdn;charset=UTF-8") //
+                    .withBodyFile("multipartStream.txt")));
+
+    ContentElementResponse contentElement = client.documentService().queryContent("aDocument") //
+        .getFirst();
+
+    assertNotNull(contentElement.getContent());
+
+
+    verify(getRequestedFor(urlMatching("/api/v1/documents/aDocument/content\\?.*")));
   }
 }
