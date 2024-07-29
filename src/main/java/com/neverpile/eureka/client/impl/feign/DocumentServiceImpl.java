@@ -7,11 +7,15 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+
+import jakarta.activation.MimeType;
+import jakarta.activation.MimeTypeParseException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.neverpile.eureka.client.content.ContentElementBuilder;
@@ -32,8 +36,6 @@ import com.neverpile.eureka.client.core.NotFoundException;
 import feign.Feign;
 import feign.Response;
 import feign.Target;
-import jakarta.activation.MimeType;
-import jakarta.activation.MimeTypeParseException;
 
 public class DocumentServiceImpl implements DocumentService {
   static final String VERSION_TIMESTAMP_HEADER = "X-NPE-Document-Version-Timestamp";
@@ -209,7 +211,8 @@ public class DocumentServiceImpl implements DocumentService {
     return new ContentQueryBuilderImpl() {
       @Override
       protected Response doQuery(final Map<String, Object> queryMap, final List<String> mediaTypes) {
-        return documentServiceTarget.queryContent(documentId, queryMap, mediaTypes);
+        Map<String, Object> headerMap = Collections.singletonMap("Accept", String.join(",",mediaTypes));
+        return documentServiceTarget.queryContent(documentId, queryMap, headerMap);
       }
     };
   }
@@ -219,7 +222,8 @@ public class DocumentServiceImpl implements DocumentService {
     return new ContentQueryBuilderImpl() {
       @Override
       protected Response doQuery(final Map<String, Object> queryMap, final List<String> mediaTypes) {
-        return documentServiceTarget.queryContent(documentId, versionTimestamp, queryMap, mediaTypes);
+        Map<String, Object> headerMap = Collections.singletonMap("Accept", String.join(",",mediaTypes));
+        return documentServiceTarget.queryContent(documentId, versionTimestamp, queryMap, headerMap);
       }
     };
   }

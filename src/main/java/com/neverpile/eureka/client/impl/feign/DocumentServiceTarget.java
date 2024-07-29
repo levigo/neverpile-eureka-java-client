@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.neverpile.eureka.client.content.MultipartFile;
 import com.neverpile.eureka.client.core.Document;
 
+import feign.HeaderMap;
 import feign.Headers;
 import feign.Param;
 import feign.QueryMap;
@@ -52,15 +53,13 @@ public interface DocumentServiceTarget {
   @RequestLine("GET " + url + "/{documentID}/content/{elementID}")
   Response getContentElement(@Param("documentID") String documentId, @Param("elementID") String elementId);
 
-  @Headers("Accept: {accept}")
   @RequestLine("GET " + url + "/{documentID}/content")
   Response queryContent(@Param("documentID") String documentId, @QueryMap Map<String, Object> queryMap,
-      @Param("accept") List<String> acceptHeaders);
+                        @HeaderMap Map<String, Object> headerMap);
 
-  @Headers("Accept: {accept}")
   @RequestLine("GET " + url + "/{documentID}/history/{versionTimestamp}/content")
   Response queryContent(@Param("documentID") String documentId, @Param("versionTimestamp") Instant versionTimestamp,
-      @QueryMap Map<String, Object> queryMap, @Param("accept") List<String> acceptHeaders);
+      @QueryMap Map<String, Object> queryMap, @HeaderMap Map<String, Object> headerMap);
 
   @Headers({"Content-Type: {contentType}", "Accept: application/json"})
   @RequestLine("PUT " + url + "/{documentID}/content/{elementID}")
