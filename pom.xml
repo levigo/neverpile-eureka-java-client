@@ -13,14 +13,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- dependency versions -->
     <feign-form.version>3.8.0</feign-form.version>
-    <feign-jackson.version>13.3</feign-jackson.version>
-    <jackson.version>2.15.4</jackson.version>
-    <slf4j-simple.version>2.0.12</slf4j-simple.version>
+    <feign-jackson.version>13.6</feign-jackson.version>
+    <jackson.version>2.20.0</jackson.version>
+    <jackson-annotations.version>2.20</jackson-annotations.version>
+    <slf4j-simple.version>2.0.17</slf4j-simple.version>
     <!-- test dependencies and maven plugins -->
-    <assertj-core.version>3.25.3</assertj-core.version>
-    <junit.version>5.10.2</junit.version>
-    <wiremock.version>3.5.2</wiremock.version>
-    <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+    <assertj-core.version>3.27.6</assertj-core.version>
+    <junit.version>5.14.0</junit.version>
+    <wiremock.version>3.13.1</wiremock.version>
   </properties>
 
   <dependencies>
@@ -94,7 +94,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
+        <version>${jackson-annotations.version}</version>
       </dependency>
       <dependency>
         <groupId>org.junit</groupId>
@@ -111,12 +111,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.13.0</version>
+        <version>3.14.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>${maven-source-plugin.version}</version>
+        <version>3.3.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -129,7 +129,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.2.5</version>
+        <version>3.5.4</version>
       </plugin>
     </plugins>
   </build>
